@@ -819,6 +819,15 @@ export const myRouter = [
     },
     children: [
       {
+        path: 'order-admin',
+        name: 'order_admin',
+        meta: {
+          icon: 'md-funnel',
+          title: '订单管理'
+        },
+        component: () => import('@/view/shopper/order/list.vue')
+      },
+      {
         path: 'my-store',
         name: 'my_store',
         meta: {
@@ -854,6 +863,15 @@ export const myRouter = [
           hideInMenu: true,
         },
         component: () => import('@/view/shopper/goods_edit.vue')
+      },
+      {
+        path: 'coupon-admin',
+        name: 'coupon_admin',
+        meta: {
+          icon: 'md-funnel',
+          title: '优惠卷管理'
+        },
+        component: () => import('@/view/shopper/coupon/list.vue')
       },
       {
         path: 'goods-sku',

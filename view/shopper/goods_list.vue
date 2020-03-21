@@ -33,6 +33,23 @@
         <Page :total="total" show-elevator :current="1" @on-change="changePage" />
       </div>
     </Card>
+    <Modal
+      v-model="couponShow"
+      title="设置商品优惠卷"
+      width="760px"
+      ok-text="提交"
+      @on-ok="setCoupon"
+      @on-cancel="reset"
+    >
+      <Row>
+        <Col>
+          <h3>选择商品优惠卷：</h3>
+          <Select v-model="coupon" multiple style="width:260px">
+            <Option v-for="item in coupons" :value="item.id" :key="item.id">{{ item.desc }}</Option>
+          </Select>
+        </Col>
+      </Row>
+    </Modal>
   </div>
 </template>
 
@@ -46,6 +63,8 @@ import {
   findGoodsFlag,
   getGoodsFlag
 } from "@/api/shop/admin";
+
+import { findCoupons, useCoupon, findGoodsCouponArr } from "@/api/shop/coupon";
 export default {
   name: "admin_list",
   components: {
@@ -71,10 +90,40 @@ export default {
         {
           title: "操作",
           key: "action",
-          width: 400,
+          width: 500,
+          tooltip: true,
           align: "center",
           render: (h, params) => {
             return h("div", [
+              h(
+                "Button",
+                {
+                  style: {
+                    marginRight: "8px"
+                  },
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  directives: [
+                    {
+                      name: "button_access",
+                      access: "goods_flag"
+                    }
+                  ],
+                  on: {
+                    click: () => {
+                      let data = { id: params.row.id };
+                      findGoodsCouponArr(data).then(res => {
+                        this.coupon = res.data.data;
+                        this.couponShow = true;
+                      });
+                      this.params = params;
+                    }
+                  }
+                },
+                "设置优惠"
+              ),
               h(
                 "Button",
                 {
@@ -198,6 +247,7 @@ export default {
       tableData: [],
       isShow: false,
       approveShow: false, //修改积分或认证
+      couponShow: false,
       total: 0,
       currentPage: 1,
       data: {},
@@ -205,7 +255,9 @@ export default {
       isEditing: false,
       rowId: 0,
       params: {},
-      flags: []
+      flags: [],
+      coupons: [],
+      coupon: []
     };
   },
   methods: {
@@ -213,6 +265,9 @@ export default {
       findGoods(data).then(res => {
         this.total = res.data.total;
         this.tableData = res.data.data;
+      });
+      findCoupons({ page: -1 }).then(res => {
+        this.coupons = res.data.data;
       });
     },
     findFlags() {
@@ -396,6 +451,26 @@ export default {
           this.$Message.error("token 错误， 请重新登录");
         } else {
           this.$Message.error(vo.msg);
+          return false;
+        }
+      });
+    },
+    setCoupon() {
+      let data = {
+        gid: this.params.row.id,
+        id: this.coupon
+      };
+      useCoupon(data).then(res => {
+        var vo = res.data;
+        if (vo.status == "success") {
+          this.$Message.success(vo.msg);
+          this.reset();
+        } else if (vo.status == "tokenExpire" || vo.status == "tokenFail") {
+          // token 过期 跳转登录页面 todo
+          this.$Message.error("token 错误， 请重新登录");
+        } else {
+          this.$Message.error(vo.msg);
+          this.reset();
           return false;
         }
       });
