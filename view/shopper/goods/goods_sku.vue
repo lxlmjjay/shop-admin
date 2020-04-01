@@ -16,10 +16,11 @@
         <!-- sku 开始 -->
         <span style="margin-left:50px">
           <Button @click="mod0(skuId,1)" size="small" type="primary">平台属性</Button>&nbsp;
-          <Button @click="mod0(skuId,2)" size="small" type="primary">销售属性</Button>&nbsp;
+          <Button @click="mod0(skuId,2)" size="small" type="primary">商品属性</Button>&nbsp;
           <Button @click="mod0(skuId,3)" size="small" type="primary">上传图片</Button>&nbsp;
           <Button @click="mod0(skuId,4)" size="small" type="primary">编辑详情</Button>&nbsp;
           <Button @click="mod0(skuId,5)" size="small" type="primary">促销活动</Button>&nbsp;
+          <Button @click="mod0(skuId,6)" size="small" type="primary">设置库存</Button>&nbsp;
         </span>
         <br />
         <br />
@@ -63,8 +64,19 @@
     >
       <Card style="width:auto">
         <div>
+          编码：
+          <Input v-model="data.skuNo" placeholder="请输入商品编码..." style="width: 200px" />
+        </div>
+        <br />
+        <div>
           描述：
-          <Input v-model="data.desc" placeholder="请输入群名称..." style="width: 200px" />
+          <Input
+            v-model="data.desc"
+            type="textarea"
+            :rows="4"
+            style="width: 500px"
+            placeholder="请输入商品描述..."
+          />
         </div>
         <br />
         <div>
@@ -73,13 +85,28 @@
         </div>
         <br />
         <div>
-          库存：
-          <InputNumber :min="0" :max="2147483647" :precision="0" v-model="data.stock"></InputNumber>
+          折扣价：
+          <InputNumber :min="0.01" :precision="2" v-model="data.salePrice"></InputNumber>
         </div>
         <br />
         <div>
           重量：
-          <InputNumber :min="0.01" :precision="2" v-model="data.weight"></InputNumber>
+          <InputNumber :min="0.01" :precision="2" v-model="data.weight"></InputNumber>&nbsp;&nbsp;
+          <Select v-model="data.weightUnit" style="width:150px">
+            <Option v-for="it in weightUnit" :value="it.id" :key="it.id">{{ it.weightUnit }}</Option>
+          </Select>
+        </div>
+        <br />
+        <div>
+          是否支持积分兑换：
+          <Select v-model="data.isScore" style="width:260px">
+            <Option v-for="it in isScoreArr" :value="it.value" :key="it.value">{{ it.label }}</Option>
+          </Select>
+        </div>
+        <br />
+        <div v-show="data.isScore==1">
+          设置积分：
+          <InputNumber :min="0.01" :precision="2" v-model="data.score"></InputNumber>
         </div>
         <br />
       </Card>
@@ -92,40 +119,53 @@
       ok-text="保存"
       @on-ok="submit3"
     >
-      <Card style="width:auto">
-        <div class="demo-upload-list" v-for="item in uploadList" :key="item.name">
-          <template v-if="item.status === 'finished'">
-            <img :src="item.url" />
-            <div class="demo-upload-list-cover">
-              <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
-              <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
+      <Card style="width:100%;height:150px">
+        <RadioGroup v-model="data.defaultImg">
+          <div class="demo-upload-list" v-for="item in uploadList" :key="item.name">
+            <div v-if="item.status === 'finished'" style="float:left">
+              <img :src="item.url" />
+              <div class="demo-upload-list-cover">
+                <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
+                <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
+              </div>
             </div>
-          </template>
-          <template v-else>
-            <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
-          </template>
-        </div>
-        <Upload
-          ref="upload"
-          :show-upload-list="false"
-          :default-file-list="defaultList"
-          :on-success="handleSuccess"
-          :format="['jpg','jpeg','png']"
-          :max-size="2048"
-          :headers="headers"
-          :data="{'from':'shop-sku'}"
-          :on-format-error="handleFormatError"
-          :on-exceeded-size="handleMaxSize"
-          :before-upload="handleBeforeUpload"
-          multiple
-          type="drag"
-          :action="upload"
-          style="display: inline-block;width:58px;"
-        >
-          <div style="width: 58px;height:58px;line-height: 58px;">
-            <Icon type="ios-camera" size="20"></Icon>
+            <div v-else>
+              <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
+            </div>
+            <!-- <template v-if="item.status === 'finished'">
+              <img :src="item.url" />
+              <div class="demo-upload-list-cover">
+                <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
+                <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
+              </div>
+            </template>
+            <template v-else>
+              <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
+            </template>-->
           </div>
-        </Upload>
+
+          <Upload
+            ref="upload"
+            :show-upload-list="false"
+            :default-file-list="defaultList"
+            :on-success="handleSuccess"
+            :format="['jpg','jpeg','png']"
+            :max-size="2048"
+            :headers="headers"
+            :data="{'from':'shop-sku'}"
+            :on-format-error="handleFormatError"
+            :on-exceeded-size="handleMaxSize"
+            :before-upload="handleBeforeUpload"
+            multiple
+            type="drag"
+            :action="upload"
+            style="display: inline-block;width:58px;"
+          >
+            <div style="width: 58px;height:58px;line-height: 58px;">
+              <Icon type="ios-camera" size="20"></Icon>
+            </div>
+          </Upload>
+        </RadioGroup>
       </Card>
     </Modal>
     <Modal
@@ -158,7 +198,24 @@
     >
       <Card style="width:auto"></Card>
     </Modal>
-
+    <Modal
+      v-model="isShow.a6"
+      title="设置库存"
+      width="800px"
+      @on-cancel="cancel"
+      ok-text="保存"
+      @on-ok="submit6"
+    >
+      <Card style="width:auto">
+        总库存：{{stockDB}}
+        可用库存：{{stockRedis}}
+        锁定库存：{{stockDB-stockRedis}}
+        <div>
+          重新设置库存：
+          <InputNumber :min="0" :precision="0" v-model="stockNew"></InputNumber>
+        </div>
+      </Card>
+    </Modal>
     <!-- 弹窗结束 -->
   </div>
 </template>
@@ -167,7 +224,6 @@
 import Editor from "_c/editor";
 import Tables from "_c/tables";
 import {
-  findGoodsAttrForSku,
   findGoodsBaseAttrForSku,
   findSkuByGid,
   getSkuImages,
@@ -177,7 +233,10 @@ import {
   getSkuGoods,
   addSkuGoods,
   addSkuBaseAttr,
-  getSkuBaseAttr
+  getSkuBaseAttr,
+  setGoodsSkuStock,
+  getGoodsSkuStock,
+  findWeightUnit
 } from "@/api/shop/admin";
 import { baseUrl, getToken } from "@/libs/util";
 import { escape2Html } from "@/libs/com";
@@ -204,7 +263,14 @@ export default {
         a5: false,
         a6: false
       },
-      data: { detail: "", baseAttrs: [], price: 0 },
+      data: {
+        detail: "",
+        baseAttrs: [],
+        price: 0,
+        salePrice: 0,
+        isScore: 1,
+        weightUnit: 1
+      },
       images: [],
       baseAttrArr: [],
       sku: [],
@@ -213,49 +279,40 @@ export default {
       upload: baseUrl() + "/api/admin/uploadOne",
       headers: { token: getToken() },
       from: "shop-sku",
-      currentPage: 1
+      currentPage: 1,
+      isScoreArr: [
+        { value: 1, label: "支持" },
+        { value: 2, label: "不支持" }
+      ],
+      stockDB: 0,
+      stockRedis: 0,
+      stockNew: 0,
+      weightUnit: []
     };
   },
   methods: {
     find() {
-      let data = { id: this.gid };
-      findGoodsAttrForSku(data)
-        .then(res => {
-          if (res.data.status == "success") {
-            this.attrs = res.data.data;
-          }
-        })
-        .catch(function(response) {
-          console.log(response);
-          return false;
-        });
       let data1 = { id: this.cid };
-      findGoodsBaseAttrForSku(data1)
-        .then(res => {
-          if (res.data.status == "success") {
-            res.data.data.forEach((item, index) => {
-              this.data["attr" + item.id] = {};
-            });
-            this.baseAttrs = res.data.data;
-          }
-        })
-        .catch(function(response) {
-          console.log(response);
-          return false;
-        });
-      let skuData = {
-        id: this.gid
-      };
-      findSkuByGid(skuData)
-        .then(res => {
-          if (res.data.status == "success") {
-            this.sku = res.data.data;
-          }
-        })
-        .catch(function(response) {
-          console.log(response);
-          return false;
-        });
+      findGoodsBaseAttrForSku(data1).then(res => {
+        if (res.data.status == "success") {
+          res.data.data.forEach((item, index) => {
+            this.data["attr" + item.id] = {};
+          });
+          this.baseAttrs = res.data.data;
+        }
+      });
+
+      let skuData = { id: this.gid };
+      findSkuByGid(skuData).then(res => {
+        if (res.data.status == "success") {
+          this.sku = res.data.data;
+        }
+      });
+      findWeightUnit().then(res => {
+        if (res.data.status == "success") {
+          this.weightUnit = res.data.data;
+        }
+      });
     },
     changeBaseAttr(items) {
       let val = [];
@@ -316,8 +373,11 @@ export default {
               let rsp = res.data.data;
               this.data.price = rsp.price;
               this.data.desc = rsp.skuDesc;
-              this.data.stock = rsp.stock;
               this.data.weight = rsp.weight;
+              this.data.weightUnit = rsp.weightUnit;
+              this.data.skuNo = rsp.skuNo;
+              this.data.isScore = rsp.isScore;
+              this.data.score = rsp.score;
             }
           });
           break;
@@ -350,6 +410,15 @@ export default {
         case 5:
           // 活动
           break;
+        case 6:
+          // 设置库存
+          getGoodsSkuStock(data).then(res => {
+            if (res.data.status == "success") {
+              this.stockDB = res.data.data.db;
+              this.stockRedis = res.data.data.redis;
+            }
+          });
+          break;
       }
       this.isShow["a" + i] = true;
     },
@@ -363,9 +432,15 @@ export default {
       let data = {
         id: this.skuId,
         price: this.data.price,
+        salePrice: this.data.salePrice,
         weight: this.data.weight,
+        weightUnit: this.data.weightUnit,
         stock: this.data.stock,
-        desc: this.data.desc
+        desc: this.data.desc,
+        isScore: this.data.isScore,
+        score: this.data.score,
+        skuNo: this.data.skuNo,
+        defaultImg: this.data.defaultImg
       };
       addSkuGoods(data).then(res => {
         if (res.data.status == "success") {
@@ -390,7 +465,14 @@ export default {
       });
     },
     submit5() {},
+    submit6() {
+      let data = { id: this.skuId, stock: this.stockNew };
+      setGoodsSkuStock(data).then(res => {
+        this.$Message.success(res.data.msg);
+      });
+    },
     handleView(name) {
+      console.log(1111, name);
       this.imgName = name;
       this.visible = true;
     },
@@ -476,6 +558,7 @@ export default {
       this.data.detail = "";
       this.baseAttrs = [];
       this.uploadList = [];
+      this.stockNew = 0;
     },
     returnList() {
       this.$router.push({

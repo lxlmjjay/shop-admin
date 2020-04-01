@@ -54,18 +54,16 @@
         </div>
       </Card>
     </Modal>
-    <Modal
-      v-model="isShow.a2"
-      title="sku属性"
-      width="800px"
-      @on-cancel="cancel"
-      ok-text="保存"
-      footer-hide
-    >
+    <Modal v-model="isShow.a2" title="sku属性" width="800px" @on-cancel="cancel" ok-text="保存">
       <Card style="width:auto">
         <div>
+          编码：
+          <Input v-model="data.skuNo" disabled placeholder="请输入商品编码..." style="width: 200px" />
+        </div>
+        <br />
+        <div>
           描述：
-          <Input v-model="data.desc" disabled placeholder="请输入群名称..." style="width: 200px" />
+          <Input v-model="data.desc" disabled placeholder="请输入商品描述..." style="width: 200px" />
         </div>
         <br />
         <div>
@@ -74,13 +72,26 @@
         </div>
         <br />
         <div>
-          库存：
-          <InputNumber :min="0" disabled :max="2147483647" :precision="0" v-model="data.stock"></InputNumber>
+          折扣价：
+          <InputNumber :min="0.01" disabled :precision="2" v-model="data.salePrice"></InputNumber>
         </div>
         <br />
         <div>
           重量：
-          <InputNumber :min="0.01" disabled :precision="2" v-model="data.weight"></InputNumber>
+          <InputNumber :min="0.01" disabled :precision="2" v-model="data.weight"></InputNumber>&nbsp;&nbsp;
+          <Input v-model="data.weightUnit" disabled placeholder="请输入单位..." style="width: 150px" />
+        </div>
+        <br />
+        <div>
+          是否支持积分兑换：
+          <Select v-model="data.isScore" disabled style="width:260px">
+            <Option v-for="it in isScoreArr" :value="it.value" :key="it.value">{{ it.label }}</Option>
+          </Select>
+        </div>
+        <br />
+        <div v-show="data.isScore==1">
+          设置积分：
+          <InputNumber :min="0.01" disabled :precision="2" v-model="data.score"></InputNumber>
         </div>
         <br />
       </Card>
@@ -161,7 +172,6 @@
 import Editor from "_c/editor";
 import Tables from "_c/tables";
 import {
-  findGoodsAttrForSku,
   findGoodsBaseAttrForSku,
   findSkuByGid,
   getSkuImages,
@@ -198,7 +208,7 @@ export default {
         a5: false,
         a6: false
       },
-      data: { detail: "", baseAttrs: [], price: 0 },
+      data: { detail: "", baseAttrs: [], price: 0, salePrice: 0, isScore: 1 },
       images: [],
       baseAttrArr: [],
       sku: [],
@@ -207,22 +217,18 @@ export default {
       upload: baseUrl() + "/api/admin/uploadOne",
       headers: { token: getToken() },
       from: "shop-sku",
-      currentPage: 1
+      currentPage: 1,
+      isScoreArr: [
+        { value: 1, label: "支持" },
+        { value: 2, label: "不支持" }
+      ],
+      stockDB: 0,
+      stockRedis: 0,
+      stockNew: 0
     };
   },
   methods: {
     find() {
-      let data = { id: this.gid };
-      findGoodsAttrForSku(data)
-        .then(res => {
-          if (res.data.status == "success") {
-            this.attrs = res.data.data;
-          }
-        })
-        .catch(function(response) {
-          console.log(response);
-          return false;
-        });
       let data1 = { id: this.cid };
       findGoodsBaseAttrForSku(data1)
         .then(res => {
@@ -310,8 +316,11 @@ export default {
               let rsp = res.data.data;
               this.data.price = rsp.price;
               this.data.desc = rsp.skuDesc;
-              this.data.stock = rsp.stock;
               this.data.weight = rsp.weight;
+              this.data.weightUnit = rsp.weightUnit;
+              this.data.skuNo = rsp.skuNo;
+              this.data.isScore = rsp.isScore;
+              this.data.score = rsp.score;
             }
           });
           break;

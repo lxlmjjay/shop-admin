@@ -1,5 +1,9 @@
 <template>
   <div>
+    <div>
+      <Button @click="returnList" type="primary">返回列表</Button>&nbsp;
+    </div>
+    <br />
     <Card style="width:auto">
       分类：{{ data.cName }}
       <!-- <Select v-model="data.cid" disabled style="width:260px">
@@ -118,6 +122,7 @@ export default {
       },
       tableData: [],
       table: [],
+      currentPage: 1,
       row: [],
       col: [],
       imgShow: true,
@@ -316,6 +321,14 @@ export default {
         } else {
           this.$Message.error(vo.msg);
           return false;
+        }
+      });
+    },
+    returnList() {
+      this.$router.push({
+        name: "goods_list",
+        params: {
+          page: this.currentPage
         }
       });
     }

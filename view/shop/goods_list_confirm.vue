@@ -43,7 +43,12 @@
 <script>
 import Tables from "_c/tables";
 import { escape2Html } from "@/libs/com";
-import { findGoods, findGoodsFlag, goodsApprove } from "@/api/shop/admin";
+import {
+  findGoods,
+  findGoodsFlag,
+  goodsApprove,
+  getGoodsFlag
+} from "@/api/shop/admin";
 export default {
   name: "goods_list_confirm",
   components: {
@@ -96,7 +101,7 @@ export default {
       cancelButtonShow: false,
       categoryList: [],
       searchData: {},
-      data: {},
+      data: { scale: 0, flag: [] },
       flags: []
     };
   },
@@ -110,11 +115,9 @@ export default {
       findGoods(data).then(res => {
         if (res.status == 200) {
           var vo = res.data;
-          if (vo.status == "success") {
+          if (vo.status == "success" && vo.data != null) {
             this.total = res.data.total;
             this.tableData = res.data.data;
-          } else {
-            this.$Message.error(vo.msg);
           }
         } else {
           this.Message.error("请求超时");
@@ -152,8 +155,22 @@ export default {
       });
     },
     handleApprove(params) {
+      this.data.scale = params.row.scale;
       this.params = params;
       this.approveShow = true;
+      let data = { id: params.row.id };
+      getGoodsFlag(data).then(res => {
+        if (res.status == 200) {
+          var vo = res.data;
+          if (vo.status == "success") {
+            this.data.flag = vo.data;
+          } else {
+            this.$Message.error(vo.msg);
+          }
+        } else {
+          this.Message.error("请求超时");
+        }
+      });
     },
     approve() {
       let data = {
@@ -166,7 +183,7 @@ export default {
           var vo = res.data;
           if (vo.status == "success") {
             this.$Message.success(vo.msg);
-            this.find({ page: this.currentPage });
+            this.find({ page: 1 });
           } else if (vo.status == "tokenExpire" || vo.status == "tokenFail") {
             // token 过期 跳转登录页面 todo
             this.$Message.error("token 错误， 请重新登录");

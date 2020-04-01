@@ -828,6 +828,15 @@ export const myRouter = [
         component: () => import('@/view/shopper/order/list.vue')
       },
       {
+        path: 'return-admin',
+        name: 'return_admin',
+        meta: {
+          icon: 'md-funnel',
+          title: '售后管理'
+        },
+        component: () => import('@/view/shopper/order/return_list.vue')
+      },
+      {
         path: 'my-store',
         name: 'my_store',
         meta: {
@@ -843,7 +852,7 @@ export const myRouter = [
           icon: 'md-funnel',
           title: '商品管理'
         },
-        component: () => import('@/view/shopper/goods_list.vue')
+        component: () => import('@/view/shopper/goods/goods_list.vue')
       },
       {
         path: 'goods-add',
@@ -852,7 +861,7 @@ export const myRouter = [
           icon: 'md-funnel',
           title: '商品添加'
         },
-        component: () => import('@/view/shopper/goods_add.vue')
+        component: () => import('@/view/shopper/goods/goods_add.vue')
       },
       {
         path: 'goods-edit',
@@ -862,7 +871,17 @@ export const myRouter = [
           title: '修改商品',
           hideInMenu: true,
         },
-        component: () => import('@/view/shopper/goods_edit.vue')
+        component: () => import('@/view/shopper/goods/goods_edit.vue')
+      },
+      {
+        path: 'goods-sku',
+        name: 'goods_sku',
+        meta: {
+          icon: 'md-funnel',
+          title: '商品sku',
+          hideInMenu: true,
+        },
+        component: () => import('@/view/shopper/goods/goods_sku.vue')
       },
       {
         path: 'coupon-admin',
@@ -874,14 +893,13 @@ export const myRouter = [
         component: () => import('@/view/shopper/coupon/list.vue')
       },
       {
-        path: 'goods-sku',
-        name: 'goods_sku',
+        path: 'tags-admin',
+        name: 'tags_admin',
         meta: {
           icon: 'md-funnel',
-          title: '商品sku',
-          hideInMenu: true,
+          title: '标签管理'
         },
-        component: () => import('@/view/shopper/goods_sku.vue')
+        component: () => import('@/view/shopper/goods/tags_admin.vue')
       },
     ]
   },

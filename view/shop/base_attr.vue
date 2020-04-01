@@ -171,7 +171,7 @@ export default {
       //平台属性
       findBaseAttr(data)
         .then(res => {
-          if (res.data.status == "success") {
+          if (res.data.status == "success" && res.data.data != null) {
             this.tableData = res.data.data;
           }
         })

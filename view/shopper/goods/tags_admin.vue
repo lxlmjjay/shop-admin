@@ -2,7 +2,7 @@
   <div>
     <Card>
       <div>
-        <Button @click="create" style="padding: 6px 12px;margin-bottom: 10px;" type="primary">添加商品认证</Button>
+        <Button @click="create" style="padding: 6px 12px;margin-bottom: 10px;" type="primary">添加标签</Button>
       </div>
       <div>
         <tables
@@ -41,7 +41,7 @@
 
 <script>
 import Tables from "_c/tables";
-import { findGoodsFlag, delGoodsFlag, addGoodsFlag } from "@/api/shop/admin";
+import { addTag, delTag, findTags } from "@/api/shop/admin";
 export default {
   name: "admin_list",
   components: {
@@ -70,7 +70,7 @@ export default {
   },
   methods: {
     find() {
-      findGoodsFlag().then(res => {
+      findTags().then(res => {
         this.tableData = res.data.data;
       });
     },
@@ -81,7 +81,7 @@ export default {
       let data = {
         name: this.data.name
       };
-      addGoodsFlag(data)
+      addTag(data)
         .then(res => {
           this.find();
           this.$Message.success(res.data.msg);
@@ -99,7 +99,7 @@ export default {
     },
     handleDelete(params) {
       let data = { id: params.row.id };
-      delGoodsFlag(data)
+      delTag(data)
         .then(res => {
           this.$Message.success(res.data.msg);
         })

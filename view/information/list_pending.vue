@@ -4,7 +4,6 @@
       <tables
         ref="tables"
         editable
-
         search-place="top"
         v-model="tableData"
         :columns="columns"
@@ -130,18 +129,16 @@ export default {
   methods: {
     initFind(data) {
       if (data) {
-        data.status = 1
+        data.status = 1;
       } else {
-        data = {status:1}
+        data = { status: 1 };
       }
       infomationList(data).then(res => {
         if (res.status == 200) {
           var vo = res.data;
-          if (vo.status == "success") {
+          if (vo.status == "success" && vo.data != null) {
             this.total = res.data.total;
             this.tableData = res.data.data;
-          } else {
-            this.$Message.error(vo.msg);
           }
         } else {
           this.Message.error("请求超时");
@@ -214,7 +211,7 @@ export default {
           var vo = res.data;
           if (vo.status == "success") {
             this.$Message.success(vo.msg);
-            this.tableData.splice(params.row.initRowIndex,1)
+            this.tableData.splice(params.row.initRowIndex, 1);
           } else {
             this.$Message.error(vo.msg);
           }

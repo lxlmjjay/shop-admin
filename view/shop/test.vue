@@ -5,6 +5,22 @@
         <Button @click="create" style="padding: 6px 12px;margin-bottom: 10px;" type="primary">申请成为商家</Button>
       </div>
       <div>
+        <div>
+          上传图片测试
+          <Upload
+            multiple
+            :action="uploadUrl"
+            :headers="headers"
+            :on-success="handleSuccess"
+            :before-upload="handleBeforeUpload"
+            :data="{'from':'goods-comment'}"
+          >
+            <Button icon="ios-cloud-upload-outline">Upload files</Button>
+          </Upload>
+          <img :src="imageUrl" alt style="width:100px;height:100px;" />
+        </div>
+      </div>
+      <!-- <div>
         <tables
           ref="tables"
           editable
@@ -18,7 +34,7 @@
             <Page :total="total" @on-change="changePage"></Page>
           </div>
         </div>
-      </div>
+      </div>-->
     </Card>
     <Modal
       v-model="isShow"
@@ -70,6 +86,7 @@ import {
   findFlags
 } from "@/api/community";
 import { testAddSupplier } from "@/api/shop/before";
+import { baseUrl, getToken } from "@/libs/util";
 
 export default {
   name: "community_list",
@@ -78,6 +95,11 @@ export default {
   },
   data() {
     return {
+      uploadUrl: baseUrl() + "/api/auth/uploadOne",
+      headers: {
+        token:
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VyQ2xhaW1zIjp7IklkIjoxMzUwNDk1NzQ0NSwiVXNlcm5hbWUiOiIxMzUwNDk1NzQ0NSJ9LCJleHAiOjE1ODU1NDk1NzQsImlzcyI6Imdpbi1icmhrIn0.pz_1nJTllYopB2iPKbXUYym5u49P-JxhuP48I0KM-8Q"
+      },
       columns: [
         { title: "ID", key: "id", sortable: true },
         { title: "社群名称", key: "groupName", sortable: true },
@@ -99,26 +121,6 @@ export default {
                     click: () => {
                       console.log(params);
                       let _this = this;
-                      //   getGroup(params.row.id)
-                      //     .then(res => {
-                      //       if (res.data.status == "tokenFail") {
-                      //         //token 过期 跳login
-                      //       } else if (res.data.status == "success") {
-                      //         let data = res.data.data;
-                      //         _this.data.id = data.id;
-                      //         _this.data.groupName = data.groupName;
-                      //         _this.data.category = data.cid;
-                      //         _this.data.imageUrl = baseImgUrl() + data.image;
-                      //         _this.data.limit = data.limit;
-                      //         _this.data.inviteCode = data.inviteCode;
-                      //         _this.data.longitude = data.longitude;
-                      //         _this.data.latitude = data.latitude;
-                      //         this.isShow = true;
-                      //         this.isEditing = true;
-                      //         this.isEditingRow = params.index;
-                      //       }
-                      //     })
-                      //     .catch(err => {});
                     }
                   }
                 },
@@ -140,7 +142,8 @@ export default {
       currentPage: 0,
       flags: [],
       isOping: false, //防止连续提交
-      files: []
+      files: [],
+      imageUrl: ""
     };
   },
   methods: {
@@ -204,6 +207,7 @@ export default {
     create() {
       this.isShow = true;
     },
+    createComment() {},
     cancel() {
       this.data = {};
       this.isShow = false;
@@ -236,6 +240,7 @@ export default {
       console.log(11111, res, file);
       //   this.data.imageUrl = window.URL.createObjectURL(file)
       console.log(this);
+      this.imageUrl = res.data.url;
     },
     handleBeforeUpload(file) {
       let f = { file: file, filename: file.name };
@@ -249,6 +254,7 @@ export default {
       //     this.data.imageUrl = res; //将_base64赋值给图片的src，实现图片预览
       //   };
     },
+
     findGroup(page) {
       let data = {
         page: page
@@ -265,8 +271,8 @@ export default {
     }
   },
   mounted() {
-    this.findGroup(1);
-    this.findFlag();
+    // this.findGroup(1);
+    // this.findFlag();
   }
 };
 </script>

@@ -1,17 +1,27 @@
 <template>
   <div>
+    <div>
+      <Button @click="returnList" type="primary">返回列表</Button>&nbsp;
+    </div>
+    <br />
     <Card style="width:auto">
       分类：
       <Cascader :data="selectData.category" v-model="data.cid" style="width: 200px"></Cascader>
       <br />
       <div>
         名称：
-        <Input v-model="data.name" placeholder="请输入名称..." style="width: 200px" />
+        <Input v-model="data.name" placeholder="请输入名称..." style="width: 500px" />
       </div>
       <br />
       <div>
         描述：
-        <Input v-model="data.desc" placeholder="请输入名称..." style="width: 200px" />
+        <Input
+          v-model="data.desc"
+          type="textarea"
+          :rows="4"
+          style="width: 500px"
+          placeholder="请输入名称..."
+        />
       </div>
       <br />
       <div>
@@ -123,6 +133,7 @@ export default {
       imgShow: false,
       isShowSubmit: false,
       isUploadShow: false,
+      currentPage: 1,
       columns: [
         {
           title: "属性名称",
@@ -292,6 +303,7 @@ export default {
         .then(res => {
           if (res.data.status == "success") {
             this.$Message.success(res.data.msg);
+            this.$route.push({ name: "goods_list" });
           } else {
             this.$Message.error(res.data.msg);
           }
@@ -325,9 +337,18 @@ export default {
           return false;
         }
       });
+    },
+    returnList() {
+      this.$router.push({
+        name: "goods_list",
+        params: {
+          page: this.currentPage
+        }
+      });
     }
   },
   mounted() {
+    this.currentPage = this.$route.params.page;
     // 查找商品分类 标签 平台属性
     this.find();
   }

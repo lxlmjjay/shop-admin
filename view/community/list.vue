@@ -141,8 +141,7 @@ import {
   delGroup,
   createGroup,
   getGroup,
-  editGroup,
-  findFlags
+  editGroup
 } from "@/api/community";
 export default {
   name: "community_list",
@@ -273,8 +272,11 @@ export default {
   methods: {
     find(data) {
       findGroups(data).then(res => {
-        this.tableData = res.data.data;
-        this.total = res.data.total;
+        var vo = res.data;
+        if (vo.status == "success" && vo.data != null) {
+          this.tableData = res.data.data;
+          this.total = res.data.total;
+        }
       });
     },
     changePage(page) {
@@ -408,12 +410,12 @@ export default {
       //   this.data.imageUrl = window.URL.createObjectURL(file)
       console.log(this);
     },
-    handleBeforeUpload(file) {},
-    findFlag() {
-      findFlags().then(res => {
-        this.flags = res.data.data;
-      });
-    }
+    handleBeforeUpload(file) {}
+    // findFlag() {
+    //   findFlags().then(res => {
+    //     this.flags = res.data.data;
+    //   });
+    // }
     //     getList() {
     //       /**
     // {

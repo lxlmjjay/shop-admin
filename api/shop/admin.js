@@ -143,10 +143,20 @@ export const approveStore = (data) => {
     })
 }
 
-//查找商品销售属性 为添加sku
-export const findGoodsAttrForSku = (data) => {
+
+//设置库存
+export const setGoodsSkuStock = (data) => {
     return axios.request({
-        url: '/api/admin/shopper/find-attrs-gid',
+        url: '/api/admin/shopper/set-goods-stock',
+        data,
+        method: 'post'
+    })
+}
+
+//获取库存
+export const getGoodsSkuStock = (data) => {
+    return axios.request({
+        url: '/api/admin/shopper/get-goods-stock',
         data,
         method: 'post'
     })
@@ -174,6 +184,24 @@ export const findSkuByGid = (data) => {
 export const findTags = (data) => {
     return axios.request({
         url: '/api/admin/shopper/find-tags',
+        data,
+        method: 'post'
+    })
+}
+
+//查找商标签
+export const addTag = (data) => {
+    return axios.request({
+        url: '/api/admin/shopper/add-tag',
+        data,
+        method: 'post'
+    })
+}
+
+//查找商标签
+export const delTag = (data) => {
+    return axios.request({
+        url: '/api/admin/shopper/del-tag',
         data,
         method: 'post'
     })
@@ -393,6 +421,14 @@ export const editFlagScale = (data) => {
 export const getGoodsFlag = (data) => {
     return axios.request({
         url: '/api/admin/shop/get-goods-flag',
+        data,
+        method: 'post'
+    })
+}
+// 查询重量单位
+export const findWeightUnit = (data) => {
+    return axios.request({
+        url: '/api/admin/shopper/find-weight-unit',
         data,
         method: 'post'
     })

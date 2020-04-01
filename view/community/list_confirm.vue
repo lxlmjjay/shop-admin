@@ -2,9 +2,6 @@
   <div>
     <Card>
       <div>
-        <Button @click="create" style="padding: 6px 12px;margin-bottom: 10px;" type="primary">创建群</Button>
-      </div>
-      <div>
         <tables
           ref="tables"
           editable
@@ -91,7 +88,6 @@ import {
   createGroup,
   getGroup,
   editGroup,
-  findFlags,
   approve
 } from "@/api/community";
 export default {
@@ -170,8 +166,11 @@ export default {
     find(data) {
       data.status = 1;
       findGroups(data).then(res => {
-        this.tableData = res.data.data;
-        this.total = res.data.total;
+        var vo = res.data;
+        if (vo.status == "success" && vo.data != null) {
+          this.tableData = res.data.data;
+          this.total = res.data.total;
+        }
       });
     },
     changePage(page) {
@@ -222,11 +221,11 @@ export default {
       //   this.data.imageUrl = window.URL.createObjectURL(file)
       console.log(this);
     },
-    findFlag() {
-      findFlags().then(res => {
-        this.flags = res.data.data;
-      });
-    },
+    // findFlag() {
+    //   findFlags().then(res => {
+    //     this.flags = res.data.data;
+    //   });
+    // },
     handleApprove(params) {
       let data = { id: params.row.id };
       approve(data)
@@ -245,7 +244,6 @@ export default {
   },
   mounted() {
     this.find({ page: 1 });
-    this.findFlag();
   }
 };
 </script>

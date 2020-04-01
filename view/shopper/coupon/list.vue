@@ -176,11 +176,9 @@ export default {
     find(data) {
       findCoupons(data).then(res => {
         var vo = res.data;
-        if (vo.status == "success") {
+        if (vo.status == "success" && vo.data != null) {
           this.total = res.data.total;
           this.tableData = res.data.data;
-        } else {
-          this.$Message.error(vo.msg);
         }
       });
     },

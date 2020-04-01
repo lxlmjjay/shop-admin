@@ -216,11 +216,9 @@ export default {
       infomationList(data).then(res => {
         if (res.status == 200) {
           var vo = res.data;
-          if (vo.status == "success") {
+          if (vo.status == "success" && vo.data != null) {
             this.total = res.data.total;
             this.tableData = res.data.data;
-          } else {
-            this.$Message.error(vo.msg);
           }
         } else {
           this.Message.error("请求超时");

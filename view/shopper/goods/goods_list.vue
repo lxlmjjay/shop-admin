@@ -12,6 +12,9 @@
         :columns="columns"
         @on-delete="handleDelete"
       />
+      <div style="margin-top:20px;float:right;margin-right:20px;">
+        <Page :total="total" show-elevator :current="1" @on-change="changePage" />
+      </div>
       <Modal v-model="approveShow" title="设置" width="760px" ok-text="提交" @on-ok="editFlag">
         <Row>
           <Col>
@@ -29,9 +32,6 @@
           </Col>
         </Row>
       </Modal>
-      <div style="margin-top:20px;float:right;margin-right:20px;">
-        <Page :total="total" show-elevator :current="1" @on-change="changePage" />
-      </div>
     </Card>
     <Modal
       v-model="couponShow"
@@ -66,22 +66,22 @@ import {
 
 import { findCoupons, useCoupon, findGoodsCouponArr } from "@/api/shop/coupon";
 export default {
-  name: "admin_list",
+  name: "goods_list",
   components: {
     Tables
   },
   data() {
     return {
       columns: [
-        { title: "ID", key: "id", width: 100, ellipsis: true },
-        { title: "名称", key: "name", width: 150, ellipsis: true },
-        { title: "描述", key: "desc", width: 150, ellipsis: true },
-        { title: "排序", key: "sort", width: 100, ellipsis: true },
-        { title: "积分比例", key: "scale", width: 100, ellipsis: true },
+        { title: "ID", key: "id", width: 100, tooltip: true },
+        { title: "名称", key: "name", width: 200, tooltip: true },
+        { title: "描述", key: "desc", width: 300, tooltip: true },
+        // { title: "排序", key: "sort", width: 100, tooltip: true },
+        { title: "积分比例", key: "scale", width: 100, tooltip: true },
         {
           title: "状态",
           key: "status",
-          ellipsis: true,
+          tooltip: true,
           render: (h, params) => {
             let text = { 0: "草稿", 1: "待审核", 2: "已发布", 3: "禁用" };
             return h("span", {}, text[params.row.status]);
@@ -105,12 +105,6 @@ export default {
                     type: "primary",
                     size: "small"
                   },
-                  directives: [
-                    {
-                      name: "button_access",
-                      access: "goods_flag"
-                    }
-                  ],
                   on: {
                     click: () => {
                       let data = { id: params.row.id };
@@ -263,8 +257,11 @@ export default {
   methods: {
     find(data) {
       findGoods(data).then(res => {
-        this.total = res.data.total;
-        this.tableData = res.data.data;
+        var vo = res.data;
+        if (vo.status == "success" && vo.data != null) {
+          this.total = res.data.total;
+          this.tableData = res.data.data;
+        }
       });
       findCoupons({ page: -1 }).then(res => {
         this.coupons = res.data.data;
@@ -450,7 +447,7 @@ export default {
           // token 过期 跳转登录页面 todo
           this.$Message.error("token 错误， 请重新登录");
         } else {
-          this.$Message.error(vo.msg);
+          // this.$Message.error(vo.msg);
           return false;
         }
       });
