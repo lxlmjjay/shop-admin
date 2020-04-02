@@ -83,7 +83,7 @@
     <Modal v-model="isUploadShow" title="上传图片" width="760px" footer-hide>
       <div>
         <!-- 图片剪裁 -->
-        <Cropper @on-crop="saveImage"></Cropper>
+        <Cropper @on-crop="saveImage" :ratio="1.32"></Cropper>
       </div>
     </Modal>
     <Modal v-model="isShowSubmit" title="提交确认" confirm @on-ok="addGoods">

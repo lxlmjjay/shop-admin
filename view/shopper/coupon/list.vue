@@ -98,13 +98,13 @@ export default {
           title: "标题",
           key: "desc",
           maxWidth: 200,
-          ellipsis: true
+          tooltip: true
         },
         {
           title: "类型",
           key: "type",
           maxWidth: 200,
-          ellipsis: true,
+          tooltip: true,
           render: (h, params) => {
             let text = { 1: "代金券", 2: "折扣卷" };
             return h("span", {}, text[params.row.type]);
@@ -114,7 +114,7 @@ export default {
           title: "价值",
           key: "",
           maxWidth: 200,
-          ellipsis: true,
+          tooltip: true,
           render: (h, params) => {
             return h(
               "span",
@@ -128,8 +128,8 @@ export default {
         {
           title: "满减",
           key: "canUse",
-          width: 200,
-          ellipsis: true,
+          maxWidth: 200,
+          tooltip: true,
           render: (h, params) => {
             return h("span", {}, "满" + params.row.canUse + "元可用");
           }
@@ -137,14 +137,14 @@ export default {
         {
           title: "有效期到",
           key: "endTime",
-          width: 200,
-          ellipsis: true
+          maxWidth: 200,
+          tooltip: true
         },
         {
           title: "状态",
           key: "status",
-          width: 200,
-          ellipsis: true,
+          maxWidth: 200,
+          tooltip: true,
           render: (h, params) => {
             let text = { 1: "启用", 2: "禁用" };
             return h("span", {}, text[params.row.status]);
@@ -153,6 +153,7 @@ export default {
         {
           title: "操作",
           key: "handle",
+          width: 200,
           options: ["edit", "delete"]
         }
       ],

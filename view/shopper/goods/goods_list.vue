@@ -73,14 +73,15 @@ export default {
   data() {
     return {
       columns: [
-        { title: "ID", key: "id", width: 100, tooltip: true },
-        { title: "名称", key: "name", width: 200, tooltip: true },
-        { title: "描述", key: "desc", width: 300, tooltip: true },
+        { title: "ID", key: "id", tooltip: true },
+        { title: "名称", key: "name", maxWidth: 200, tooltip: true },
+        { title: "描述", key: "desc", maxWidth: 200, tooltip: true },
         // { title: "排序", key: "sort", width: 100, tooltip: true },
-        { title: "积分比例", key: "scale", width: 100, tooltip: true },
+        { title: "积分比例", key: "scale", maxWidth: 200, tooltip: true },
         {
           title: "状态",
           key: "status",
+          maxWidth: 200,
           tooltip: true,
           render: (h, params) => {
             let text = { 0: "草稿", 1: "待审核", 2: "已发布", 3: "禁用" };

@@ -2,7 +2,7 @@
   <div>
     <Card>
       <Tabs type="card">
-        <TabPane label="所有订单列表">
+        <TabPane label="所有售后订单列表">
           <tables ref="tables" search-place="top" v-model="tableData" :columns="columns" />
           <div style="margin-top:20px;float:right;margin-right:20px;">
             <Page :total="total" show-elevator :current="1" @on-change="changePage" />
@@ -14,13 +14,15 @@
             search-place="top"
             v-model="tableDataReturn"
             :columns="columnsReturn"
-            @on-approve="handleApprove"
           />
         </TabPane>
       </Tabs>
     </Card>
-    <Modal v-model="isShowConfirm" title="确认框" width="300px" @on-ok="handleApproveOk">
-      <div>确定退款审核通过吗？</div>
+    <Modal v-model="isShowConfirm" title="确认框" width="300px" @on-ok="handleApproveOk(1)">
+      <div>确定同意退款吗？</div>
+    </Modal>
+    <Modal v-model="isShowConfirm2" title="确认框" width="300px" @on-ok="handleApproveOk(2)">
+      <div>确定拒绝退款吗？</div>
     </Modal>
   </div>
 </template>
@@ -39,49 +41,49 @@ export default {
         {
           title: "退单编号",
           key: "returnNo",
-          width: 200,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "订单编号",
           key: "orderNo",
-          width: 200,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "商品编号",
           key: "skuNo",
-          width: 150,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "商品名称",
           key: "skuName",
-          width: 200,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "退单金额",
           key: "returnAmount",
-          width: 100,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "扣除优惠",
           key: "returnDiscount",
-          width: 100,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "退单数量",
           key: "returnCount",
-          width: 100,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "申请人",
           key: "userId",
-          width: 150,
+          maxWidth: 200,
           tooltip: true
         },
         {
@@ -92,7 +94,7 @@ export default {
             let text = {
               // 状态 1申请中 2 商家审核，正在退货 3 完成
               1: "待审核",
-              2: "已审核，进行中",
+              2: "已审核",
               3: "已完成"
             };
             return h("span", {}, text[params.row.status]);
@@ -103,60 +105,108 @@ export default {
         {
           title: "退单编号",
           key: "returnNo",
-          width: 200,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "订单编号",
           key: "orderNo",
-          width: 200,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "商品编号",
           key: "skuNo",
-          width: 150,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "商品名称",
           key: "skuName",
-          width: 200,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "退单金额",
           key: "returnAmount",
-          width: 100,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "扣除优惠",
           key: "returnDiscount",
-          width: 100,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "退单数量",
           key: "returnCount",
-          width: 100,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "申请人",
           key: "userId",
-          width: 150,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "操作",
           key: "handle",
-          options: ["view", "approve"]
+          options: ["view"],
+          width: 200,
+          button: [
+            (h, params, vm) => {
+              return h(
+                "Button",
+                {
+                  style: {
+                    cursor: "pointer",
+                    marginRight: "8px"
+                  },
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      this.isShowConfirm = true;
+                      this.params = params;
+                    }
+                  }
+                },
+                "同意"
+              );
+            },
+            (h, params, vm) => {
+              return h(
+                "Button",
+                {
+                  style: {
+                    cursor: "pointer",
+                    marginRight: "8px"
+                  },
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      this.isShowConfirm2 = true;
+                      this.params = params;
+                    }
+                  }
+                },
+                "拒绝"
+              );
+            }
+          ]
         }
       ],
       tableData: [],
       tableDataReturn: [],
       isShowConfirm: false,
+      isShowConfirm2: false,
       total: 0,
       currentPage: 1,
       params: {}
@@ -176,10 +226,13 @@ export default {
       let data = { page: -1, status: 1 };
       findReturnOrders(data).then(res => {
         var vo = res.data;
-        if (vo.status == "success" && vo.data != null) {
-          this.tableDataReturn = res.data.data;
-        } else {
-          this.$Message.error(vo.msg);
+        this.tableDataReturn = [];
+        if (vo.status == "success") {
+          if (vo.data == null) {
+            this.tableDataReturn = [];
+          } else {
+            this.tableDataReturn = res.data.data;
+          }
         }
       });
     },
@@ -187,23 +240,21 @@ export default {
       this.currentPage = page;
       this.find({ page: this.currentPage });
     },
-    handleApprove(params) {
-      console.log("退款审核", params);
-      this.isShowConfirm = true;
-      this.params = params;
-    },
-    handleApproveOk() {
-      let data = { returnNo: this.params.row.returnNo };
+    handleApproveOk(isYes) {
+      let data = { returnNo: this.params.row.returnNo, isYes: isYes };
       returnApprove(data).then(res => {
         var vo = res.data;
         if (vo.status == "success") {
-          this.$Message.success(vo.msg);
+          this.find({ page: this.currentPage });
           this.findReturn();
+          this.$Message.success("操作成功");
         }
       });
     },
     reset() {
       this.isShowView = false;
+      this.isShowConfirm = false;
+      this.isShowConfirm2 = false;
     }
   },
   mounted() {

@@ -75,7 +75,10 @@ export default {
               return h(
                 "Button",
                 {
-                  props: {},
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
                   on: {
                     click: () => {
                       this.get(params.row.id);

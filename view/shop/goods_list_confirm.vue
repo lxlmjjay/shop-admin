@@ -60,25 +60,22 @@ export default {
         {
           title: "ID",
           key: "id",
-          maxWidth: 200,
-          ellipsis: true
+          tooltip: true
         },
         {
           title: "标题",
           key: "name",
-          maxWidth: 200,
-          ellipsis: true
+          tooltip: true
         },
         {
           title: "简介",
           key: "desc",
-          maxWidth: 200,
-          ellipsis: true
+          tooltip: true
         },
         {
           title: "排序",
           key: "sort",
-          width: 150,
+          tooltip: true,
           // checkAccess: ["super_admin"],
           // sortable: "custom"
           editable: true,
@@ -87,6 +84,7 @@ export default {
         {
           title: "操作",
           key: "handle",
+          width: 200,
           options: ["view", "approve"]
         }
       ],

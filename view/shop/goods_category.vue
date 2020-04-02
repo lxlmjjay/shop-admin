@@ -14,7 +14,6 @@
       :selectable="false"
       :columns="columns"
       :data="all"
-      @row-dblclick="clickRowDouble"
     >
       <template slot="image" slot-scope="image">
         <img :src="image.row.image" alt style="height:100px;width:100px" />
@@ -72,7 +71,7 @@
     <Modal v-model="isUploadShow" title="上传图片" width="760px" footer-hide>
       <div>
         <!-- 图片剪裁 -->
-        <Cropper @on-crop="saveImage"></Cropper>
+        <Cropper @on-crop="saveImage" :ratio="1"></Cropper>
       </div>
     </Modal>
   </Card>
@@ -86,24 +85,11 @@ import {
   delGoodsCategory
 } from "@/api/shop/admin";
 import { uploadOne } from "@/api/file";
-// import Tables from "_c/tables";
-// import OrgView from "../components/org-tree/components/org-view.vue";
-// import ZoomController from "../components/org-tree/components/zoom-controller.vue";
 import { getOrgData } from "@/api/data";
 import Cropper from "_c/cropper";
-import "../components/org-tree/index.less";
-const menuDic = {
-  edit: "编辑分类名称",
-  detail: "查看部门",
-  new: "新增子分类",
-  delete: "删除分类"
-};
 export default {
   name: "tree_table_page",
   components: {
-    // OrgView,
-    // ZoomController,
-    // Tables
     Cropper
   },
   data() {
@@ -146,16 +132,11 @@ export default {
       ]
     };
   },
-  computed: {
-    zoomHandled() {
-      return this.zoom / 100;
-    }
-  },
+  computed: {},
   methods: {
     find() {
       findGoodsCategory().then(res => {
         if (res.data.status == "success") {
-          console.log(res.data);
           this.all = res.data.data;
           let data = { id: 0, label: "商品分类", children: res.data.data };
           this.data = data;
@@ -167,7 +148,6 @@ export default {
       return data;
     },
     createOne(params) {
-      console.log(params);
       if (params.row) {
         this.reqData.parentId = params.row.id;
       }
@@ -186,14 +166,7 @@ export default {
       this.reqData.id = params.row.id;
     },
     changePanel(item) {
-      console.log(444, item[0]);
       this.isShowChild = item[0];
-    },
-    handle(scope) {
-      console.log(scope);
-    },
-    clickRowDouble() {
-      console.log(8989);
     },
     submit() {
       let data = {
@@ -275,7 +248,6 @@ export default {
           this.imgShow = true;
           this.reqData.imageName = vo.data.name;
           this.reqData.imageUrl = vo.data.url;
-          console.log(666, this.data);
         } else if (vo.status == "tokenExpire" || vo.status == "tokenFail") {
           // token 过期 跳转登录页面 todo
           this.$route.push({ name: "login" });

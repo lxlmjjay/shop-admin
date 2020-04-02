@@ -3,29 +3,24 @@
     <Card>
       <div>
         <Tabs type="card">
-            <TabPane label="所有商家列表">
-              <tables
-                ref="tables"
-                editable
-                search-place="top"
-                v-model="tableData"
-                :columns="columns"
-                @on-delete="handleDelete"
-              />
-              <div style="margin: 10px;overflow: hidden">
-                <div style="float: right;">
-                  <Page :total="total" @on-change="changePage"></Page>
-                </div>
+          <TabPane label="所有商家列表">
+            <tables
+              ref="tables"
+              editable
+              search-place="top"
+              v-model="tableData"
+              :columns="columns"
+              @on-delete="handleDelete"
+            />
+            <div style="margin: 10px;overflow: hidden">
+              <div style="float: right;">
+                <Page :total="total" @on-change="changePage"></Page>
               </div>
-            </TabPane>
-            <TabPane label="待审核商家列表">
-              <tables
-                ref="tables"
-                search-place="top"
-                v-model="tableData2"
-                :columns="columns2"
-              />
-            </TabPane>
+            </div>
+          </TabPane>
+          <TabPane label="待审核商家列表">
+            <tables ref="tables" search-place="top" v-model="tableData2" :columns="columns2" />
+          </TabPane>
         </Tabs>
       </div>
     </Card>
@@ -39,7 +34,12 @@
 
 <script>
 import Tables from "_c/tables";
-import { findSupplier, findSupplierPending,getSupplierFile,approvalSupplier } from "@/api/shop/admin";
+import {
+  findSupplier,
+  findSupplierPending,
+  getSupplierFile,
+  approvalSupplier
+} from "@/api/shop/admin";
 import { baseImgUrl } from "@/libs/util";
 export default {
   name: "community_list",
@@ -50,11 +50,11 @@ export default {
     return {
       columns: [
         // { title: "ID", key: "id" },
-        { title: "姓名", key: "name",tooltip:true },
-        { title: "电话", key: "username" ,tooltip:true},
+        { title: "姓名", key: "name", tooltip: true },
+        { title: "电话", key: "username", tooltip: true },
         // { title: "备用电话", key: "phone" ,tooltip:true},
-        { title: "身份证", key: "idCard" ,tooltip:true},
-        { title: "备注", key: "remark" ,tooltip:true},
+        { title: "身份证", key: "idCard", tooltip: true },
+        { title: "备注", key: "remark", tooltip: true },
         { title: "状态", key: "statusName" },
         // { title: "创建时间", key: "created" ,tooltip:true},
         {
@@ -66,27 +66,30 @@ export default {
               return h(
                 "Button",
                 {
-                  props: {},
+                  props: {
+                    size: "small",
+                    type: "primary"
+                  },
                   on: {
                     click: () => {
-                      this.get(params.row.id)
+                      this.get(params.row.id);
                       this.isShow = true;
                     }
                   }
                 },
-                "查看"
+                "查看资质"
               );
-            },
+            }
           ]
         }
       ],
       columns2: [
         // { title: "ID", key: "id" },
-        { title: "姓名", key: "name",tooltip:true },
-        { title: "电话", key: "username" ,tooltip:true},
+        { title: "姓名", key: "name", tooltip: true },
+        { title: "电话", key: "username", tooltip: true },
         // { title: "备用电话", key: "phone" ,tooltip:true},
-        { title: "身份证", key: "idCard" ,tooltip:true},
-        { title: "备注", key: "remark" ,tooltip:true},
+        { title: "身份证", key: "idCard", tooltip: true },
+        { title: "备注", key: "remark", tooltip: true },
         // { title: "状态", key: "statusName" },
         // { title: "创建时间", key: "created" ,tooltip:true},
         {
@@ -101,7 +104,7 @@ export default {
                   props: {},
                   on: {
                     click: () => {
-                      this.get(params.row.id)
+                      this.get(params.row.id);
                       this.isShow = true;
                     }
                   }
@@ -119,7 +122,7 @@ export default {
                   },
                   on: {
                     "on-ok": () => {
-                      this.approve(params.row.id, 1)
+                      this.approve(params.row.id, 1);
                     }
                   }
                 },
@@ -136,7 +139,7 @@ export default {
                   },
                   on: {
                     "on-ok": () => {
-                      this.approve(params.row.id, 2)
+                      this.approve(params.row.id, 2);
                     }
                   }
                 },
@@ -151,21 +154,21 @@ export default {
       isShow: false,
       total: 0,
       currentPage: 0,
-      files:[],
-      baseUrl:baseImgUrl()
+      files: [],
+      baseUrl: baseImgUrl()
     };
   },
   methods: {
     find() {
-      this.tableData = []
-      this.tableData2 = []
+      this.tableData = [];
+      this.tableData2 = [];
       findSupplier()
         .then(res => {
           if (res.data.status == "tokenFail") {
             //token 过期 跳login
           } else if (res.data.status == "success") {
-            if (res.data.data!=null){
-              this.tableData = res.data.data
+            if (res.data.data != null) {
+              this.tableData = res.data.data;
             }
           }
         })
@@ -175,37 +178,37 @@ export default {
           if (res.data.status == "tokenFail") {
             //token 过期 跳login
           } else if (res.data.status == "success") {
-            if (res.data.data!=null){
-              this.tableData2 = res.data.data
+            if (res.data.data != null) {
+              this.tableData2 = res.data.data;
             }
           }
         })
         .catch(err => {});
     },
-    get(id){
+    get(id) {
       let data = {
-        id:id
-      }
+        id: id
+      };
       getSupplierFile(data)
         .then(res => {
           if (res.data.status == "tokenFail") {
             //token 过期 跳login
           } else if (res.data.status == "success") {
-            console.log(res.data)
-            this.files = res.data.data
+            console.log(res.data);
+            this.files = res.data.data;
           }
         })
         .catch(err => {});
     },
-    approve(id,status){
-      let data = {id:id,status:status}
+    approve(id, status) {
+      let data = { id: id, status: status };
       approvalSupplier(data)
         .then(res => {
           if (res.data.status == "tokenFail") {
             //token 过期 跳login
           } else if (res.data.status == "success") {
             this.$Message.success("操作成功");
-            this.find()
+            this.find();
           } else {
             this.$Message.error("操作失败");
           }

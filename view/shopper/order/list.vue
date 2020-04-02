@@ -77,37 +77,35 @@ export default {
         {
           title: "子订单ID",
           key: "detailId",
-          width: 100,
           tooltip: true
         },
         {
           title: "商品ID",
           key: "goodsSkuId",
-          width: 100,
           tooltip: true
         },
         {
           title: "商品名称",
           key: "goodsSkuName",
-          width: 200,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "商品编号",
           key: "goodsSkuNo",
-          width: 150,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "购买数量",
           key: "goodsCount",
-          width: 100,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "购买价格",
           key: "goodsPrice",
-          width: 100,
+          maxWidth: 200,
           tooltip: true
         }
       ],
@@ -115,13 +113,13 @@ export default {
         {
           title: "订单号",
           key: "orderNo",
-          width: 200,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "订单金额",
           key: "totalAmount",
-          width: 150,
+          maxWidth: 200,
           tooltip: true
         },
         {
@@ -133,13 +131,13 @@ export default {
         {
           title: "实付金额",
           key: "payAmount",
-          width: 150,
+          maxWidth: 200,
           tooltip: true
         },
         {
           title: "商品数量",
           key: "",
-          width: 150,
+          maxWidth: 200,
           tooltip: true,
           render: (h, params) => {
             return h("span", {}, params.row.details.length);
@@ -169,9 +167,11 @@ export default {
         {
           title: "操作",
           key: "handle",
+          width: 200,
           options: ["view"],
           button: [
             (h, params, vm) => {
+              console.log(params.row.status);
               return h(
                 "Button",
                 {
@@ -181,7 +181,8 @@ export default {
                   },
                   props: {
                     type: "primary",
-                    size: "small"
+                    size: "small",
+                    disabled: params.row.status == 4 ? false : true
                   },
                   on: {
                     click: () => {

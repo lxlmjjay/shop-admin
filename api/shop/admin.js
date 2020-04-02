@@ -433,3 +433,20 @@ export const findWeightUnit = (data) => {
         method: 'post'
     })
 }
+// 获取二级商品分类
+export const findGoodsCategoryByLevel = (data) => {
+    return axios.request({
+        url: '/api/admin/shop/category-level',
+        data,
+        method: 'post'
+    })
+}
+
+//设置商品分类推荐
+export const setGoodsCategoryIsHome = (data) => {
+    return axios.request({
+        url: '/api/admin/shop/is_home',
+        data,
+        method: 'post'
+    })
+}

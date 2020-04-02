@@ -120,53 +120,53 @@
       @on-ok="submit3"
     >
       <Card style="width:100%;height:150px">
-        <RadioGroup v-model="data.defaultImg">
+        <RadioGroup v-model="data.radio">
           <div class="demo-upload-list" v-for="item in uploadList" :key="item.name">
-            <div v-if="item.status === 'finished'" style="float:left">
+            <div>
               <img :src="item.url" />
-              <div class="demo-upload-list-cover">
-                <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
-                <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
-              </div>
             </div>
-            <div v-else>
-              <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
+            <div>
+              <Radio @on-change="changeRadio(item)" border></Radio>
             </div>
-            <!-- <template v-if="item.status === 'finished'">
-              <img :src="item.url" />
-              <div class="demo-upload-list-cover">
-                <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
-                <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
-              </div>
-            </template>
-            <template v-else>
-              <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
-            </template>-->
+            <div class="demo-upload-list-cover">
+              <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
+              <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
+            </div>
           </div>
-
-          <Upload
-            ref="upload"
-            :show-upload-list="false"
-            :default-file-list="defaultList"
-            :on-success="handleSuccess"
-            :format="['jpg','jpeg','png']"
-            :max-size="2048"
-            :headers="headers"
-            :data="{'from':'shop-sku'}"
-            :on-format-error="handleFormatError"
-            :on-exceeded-size="handleMaxSize"
-            :before-upload="handleBeforeUpload"
-            multiple
-            type="drag"
-            :action="upload"
-            style="display: inline-block;width:58px;"
-          >
-            <div style="width: 58px;height:58px;line-height: 58px;">
-              <Icon type="ios-camera" size="20"></Icon>
-            </div>
-          </Upload>
         </RadioGroup>
+        <Button
+          @click="uploadOne"
+          style="padding: 6px 12px;margin-bottom: 10px;"
+          type="primary"
+        >上传图片</Button>
+        <!-- <Upload
+          ref="upload"
+          :show-upload-list="false"
+          :default-file-list="defaultList"
+          :on-success="handleSuccess"
+          :format="['jpg','jpeg','png']"
+          :max-size="2048"
+          :headers="headers"
+          :data="{'from':'shop-sku'}"
+          :on-format-error="handleFormatError"
+          :on-exceeded-size="handleMaxSize"
+          :before-upload="handleBeforeUpload"
+          multiple
+          type="drag"
+          :action="upload"
+          style="display: inline-block;width:58px;"
+        >
+          <div style="width: 58px;height:58px;line-height: 58px;">
+            <Icon type="ios-camera" size="20"></Icon>
+          </div>
+        </Upload>-->
       </Card>
+    </Modal>
+    <Modal v-model="isUploadShow" title="上传图片" width="760px" footer-hide>
+      <div>
+        <!-- 图片剪裁 -->
+        <Cropper @on-crop="saveImage" :ratio="1"></Cropper>
+      </div>
     </Modal>
     <Modal
       v-model="isShow.a4"
@@ -207,9 +207,11 @@
       @on-ok="submit6"
     >
       <Card style="width:auto">
-        总库存：{{stockDB}}
-        可用库存：{{stockRedis}}
-        锁定库存：{{stockDB-stockRedis}}
+        总库存：{{stockDB}} &nbsp;&nbsp;&nbsp;
+        可用库存：{{stockRedis}}&nbsp;&nbsp;&nbsp;
+        锁定库存：{{stockDB-stockRedis}}&nbsp;&nbsp;&nbsp;
+        <br />
+        <br />
         <div>
           重新设置库存：
           <InputNumber :min="0" :precision="0" v-model="stockNew"></InputNumber>
@@ -238,6 +240,8 @@ import {
   getGoodsSkuStock,
   findWeightUnit
 } from "@/api/shop/admin";
+import { uploadOne } from "@/api/file";
+import Cropper from "_c/cropper";
 import { baseUrl, getToken } from "@/libs/util";
 import { escape2Html } from "@/libs/com";
 import store from "@/store";
@@ -245,7 +249,8 @@ export default {
   name: "admin_list",
   components: {
     Tables,
-    Editor
+    Editor,
+    Cropper
   },
   data() {
     return {
@@ -263,6 +268,7 @@ export default {
         a5: false,
         a6: false
       },
+      isUploadShow: false,
       data: {
         detail: "",
         baseAttrs: [],
@@ -348,6 +354,9 @@ export default {
     cancel() {
       this.reset();
       //   this.isShow = {};
+    },
+    uploadOne() {
+      this.isUploadShow = true;
     },
     mod0(skuId, i) {
       skuId = parseInt(skuId);
@@ -487,13 +496,51 @@ export default {
         });
         this.uploadList.splice(index, 1);
       } else {
-        const fileList = this.$refs.upload.fileList;
+        // const fileList = this.$refs.upload.fileList;
         // console.log(4444, this.uploadList);
-        this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
+        // this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
         id = file.response.data.id;
       }
 
       this.delSkuImg(id);
+    },
+    saveImage(blob) {
+      let formData = new FormData();
+      formData.append("from", this.from);
+      formData.append("file", blob);
+      uploadOne(formData).then(res => {
+        var vo = res.data;
+        if (vo.status == "success") {
+          console.log(vo);
+          this.isUploadShow = false;
+          if (this.uploadList == null) {
+            this.uploadList = [];
+          }
+          let list = {
+            fid: vo.data.id,
+            name: vo.data.name,
+            url: vo.data.url
+          };
+          console.log(list);
+          this.uploadList.push(list);
+          let skuImg = {
+            skuId: this.skuId,
+            fid: vo.data.id,
+            imgName: vo.data.name
+          };
+          this.images.push(skuImg);
+        } else if (vo.status == "tokenExpire" || vo.status == "tokenFail") {
+          // token 过期 跳转登录页面 todo
+          this.$route.push({ name: "login" });
+          this.$Message.error("token 错误， 请重新登录");
+        } else {
+          this.$Message.error(vo.msg);
+          return false;
+        }
+      });
+    },
+    changeRadio(para) {
+      console.log(para);
     },
     handleSuccess(res, file) {
       file.fid = file.response.data.id;
@@ -583,7 +630,7 @@ export default {
   // },
   mounted() {
     this.find();
-    this.uploadList = this.$refs.upload.fileList;
+    // this.uploadList = this.$refs.upload.fileList;
   }
 };
 </script>

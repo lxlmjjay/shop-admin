@@ -797,6 +797,15 @@ export const myRouter = [
         },
         component: () => import('@/view/shop/store_list.vue')
       },
+      {
+        path: 'category_is_home',
+        name: 'category_is_home',
+        meta: {
+          icon: 'md-funnel',
+          title: '设置分类页推荐'
+        },
+        component: () => import('@/view/shop/category_is_home.vue')
+      },
       // {
       //   path: 'base-attr',
       //   name: 'base_attr',

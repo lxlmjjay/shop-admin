@@ -9,8 +9,8 @@ const { homeName } = config
 
 Vue.use(Router)
 const router = new Router({
-  base: '/admin',   //线上
-  // base: '/brhk',
+  // base: '/admin',   //线上
+  base: '/brhk',
   routes,
   // mode: 'history'
   mode: 'hash'
