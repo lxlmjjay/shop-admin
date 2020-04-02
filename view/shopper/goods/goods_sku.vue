@@ -15,11 +15,11 @@
         </Col>
         <!-- sku 开始 -->
         <span style="margin-left:50px">
-          <Button @click="mod0(skuId,1)" size="small" type="primary">平台属性</Button>&nbsp;
+          <!-- <Button @click="mod0(skuId,1)" size="small" type="primary">平台属性</Button>&nbsp; -->
           <Button @click="mod0(skuId,2)" size="small" type="primary">商品属性</Button>&nbsp;
           <Button @click="mod0(skuId,3)" size="small" type="primary">上传图片</Button>&nbsp;
           <Button @click="mod0(skuId,4)" size="small" type="primary">编辑详情</Button>&nbsp;
-          <Button @click="mod0(skuId,5)" size="small" type="primary">促销活动</Button>&nbsp;
+          <!-- <Button @click="mod0(skuId,5)" size="small" type="primary">促销活动</Button>&nbsp; -->
           <Button @click="mod0(skuId,6)" size="small" type="primary">设置库存</Button>&nbsp;
         </span>
         <br />

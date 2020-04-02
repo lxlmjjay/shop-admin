@@ -797,15 +797,15 @@ export const myRouter = [
         },
         component: () => import('@/view/shop/store_list.vue')
       },
-      {
-        path: 'base-attr',
-        name: 'base_attr',
-        meta: {
-          icon: 'md-funnel',
-          title: '平台属性'
-        },
-        component: () => import('@/view/shop/base_attr.vue')
-      },
+      // {
+      //   path: 'base-attr',
+      //   name: 'base_attr',
+      //   meta: {
+      //     icon: 'md-funnel',
+      //     title: '平台属性'
+      //   },
+      //   component: () => import('@/view/shop/base_attr.vue')
+      // },
     ]
   },
   {
