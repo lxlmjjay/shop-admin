@@ -30,6 +30,11 @@
       </div>
       <br />
       <div>
+        运费：
+        <InputNumber :min="0" :precision="2" v-model="data.postAmount"></InputNumber>&nbsp;(0为包邮)
+      </div>
+      <br />
+      <div>
         商品图片
         <Button icon="ios-cloud-upload-outline" @click="uploadFile">上传图片</Button>&nbsp;
         <!-- 上传图片 -->
@@ -118,7 +123,8 @@ export default {
         sku: [],
         images: [],
         saleAttr: [{ id: 0, name: "", value: [] }],
-        attrVal: ""
+        attrVal: "",
+        postAmount: 0
       },
       tableData: [],
       table: [],
@@ -195,6 +201,7 @@ export default {
             this.data = data.goods;
             this.data.imageUrl = data.goods.image;
             this.data.tagId = data.tags;
+            this.data.postAmount = data.postAmount;
           }
         })
         .catch(function(response) {
@@ -278,7 +285,8 @@ export default {
         name: this.data.name,
         desc: this.data.desc,
         image: this.data.imageName,
-        tagId: this.data.tagId
+        tagId: this.data.tagId,
+        postAmount: this.data.postAmount
       };
       editGoods(data)
         .then(res => {

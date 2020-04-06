@@ -43,8 +43,9 @@
         ></org-view>
       </div>
     </div>-->
-    <Modal v-model="isShowName" title="分类名称" width="760px" @on-cancel="resetData" @on-ok="submit">
+    <Modal v-model="isShowName" title="添加分类" width="760px" @on-cancel="resetData" @on-ok="submit">
       <div>
+        分类名称
         <Input v-model="reqData.name" placeholder="请输入分类" clearable style="width:30%" />
       </div>
       <br />

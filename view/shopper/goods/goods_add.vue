@@ -32,6 +32,11 @@
       </div>
       <br />
       <div>
+        运费：
+        <InputNumber :min="0" :precision="2" v-model="data.postAmount"></InputNumber>&nbsp;(0为包邮)
+      </div>
+      <br />
+      <div>
         商品图片
         <Button icon="ios-cloud-upload-outline" @click="uploadFile">上传图片</Button>&nbsp;
         <!-- 上传图片 -->
@@ -124,7 +129,8 @@ export default {
         sku: [],
         images: [],
         saleAttr: [{ id: 0, name: "", value: [] }],
-        attrVal: ""
+        attrVal: "",
+        postAmount: 0
       },
       tableData: [],
       table: [],
@@ -296,14 +302,15 @@ export default {
         desc: this.data.desc,
         image: this.data.imageName,
         tagId: this.data.tagId,
-        saleAttr: this.data.saleAttr
+        saleAttr: this.data.saleAttr,
+        postAmount: this.data.postAmount
       };
 
       addGoods(data)
         .then(res => {
           if (res.data.status == "success") {
             this.$Message.success(res.data.msg);
-            this.$route.push({ name: "goods_list" });
+            this.$router.push({ name: "goods_list" });
           } else {
             this.$Message.error(res.data.msg);
           }

@@ -16,58 +16,74 @@
     <div style="margin-top:20px;float:right;margin-right:20px;">
       <Page :total="total" show-elevator :current="1" @on-change="changePage" />
     </div>
-
-    <Modal v-model="isShow.add" title="设置" width="760px" ok-text="提交" @on-ok="submit">
+    <Modal
+      v-model="isShow.add"
+      title="设置"
+      width="760px"
+      ok-text="提交"
+      @on-ok="submit"
+      @on-cancel="reset"
+    >
       <Row>
         <Col>
-          <h3>名称：</h3>
           <div>
+            名称：
             <Input v-model="data.desc" placeholder="优惠卷名称" clearable style="width:300px;"></Input>
           </div>
         </Col>
       </Row>
+      <br />
       <Row>
         <Col>
-          <h3>类型：</h3>
+          类型：
           <Select v-model="data.type" style="width:260px">
             <Option v-for="item in types" :value="item.value" :key="item.value">{{ item.label }}</Option>
           </Select>
         </Col>
       </Row>
-      <Row v-show="data.type ==1">
-        <Col>
-          <h3>优惠金额：</h3>
+      <br />
+      <Row>
+        <Col v-show="data.type ==1">
+          优惠金额：
           <InputNumber v-model="data.value" :min="0" :precision="2"></InputNumber>
         </Col>
-      </Row>
-      <br />
-      <Row v-show="data.type ==2">
-        <Col>
-          <h3>商品折扣：</h3>
+        <Col v-show="data.type ==2">
+          商品折扣：
           <InputNumber v-model="data.sale" :min="0" :max="100" :precision="0"></InputNumber>% (90代表9折)
         </Col>
       </Row>
+      <br />
       <Row>
         <Col>
-          <h3>使用限制：</h3>订单满
+          订单满
           <InputNumber v-model="data.canUse" :min="0" :precision="2"></InputNumber>元可用
         </Col>
       </Row>
+      <br />
       <Row>
         <Col>
-          <h3>有效期：</h3>
+          使用范围：
+          <Select v-model="data.scope" style="width:260px">
+            <Option v-for="item in scopes" :value="item.value" :key="item.value">{{ item.label }}</Option>
+          </Select>
+        </Col>
+      </Row>
+      <br />
+      <Row>
+        <Col>
+          有效期：
           <Select v-model="data.isForever" style="width:260px">
             <Option v-for="item in times" :value="item.value" :key="item.value">{{ item.label }}</Option>
           </Select>
         </Col>
       </Row>
+      <br />
       <Row v-show="data.isForever ==2">
         <Col>
           <h3>请选择期限：</h3>
           <DatePicker
             v-model="data.time"
-            format="yyyy-MM-dd HH:mm:ss"
-            type="daterange"
+            type="datetimerange"
             split-panels
             placeholder="Select date"
             style="width: 300px"
@@ -135,21 +151,38 @@ export default {
           }
         },
         {
-          title: "有效期到",
-          key: "endTime",
-          maxWidth: 200,
-          tooltip: true
-        },
-        {
-          title: "状态",
-          key: "status",
+          title: "范围",
+          key: "scope",
           maxWidth: 200,
           tooltip: true,
           render: (h, params) => {
-            let text = { 1: "启用", 2: "禁用" };
-            return h("span", {}, text[params.row.status]);
+            let text = { 1: "部分可用", 2: "店铺通用", 3: "平台通过" };
+            return h("span", {}, text[params.row.scope]);
           }
         },
+        {
+          title: "有效期到",
+          key: "endTime",
+          maxWidth: 300,
+          tooltip: true,
+          render: (h, params) => {
+            return h(
+              "span",
+              {},
+              params.row.isForever == 1 ? "永久有效" : params.row.endTime
+            );
+          }
+        },
+        // {
+        //   title: "状态",
+        //   key: "status",
+        //   maxWidth: 200,
+        //   tooltip: true,
+        //   render: (h, params) => {
+        //     let text = { 1: "启用", 2: "禁用" };
+        //     return h("span", {}, text[params.row.status]);
+        //   }
+        // },
         {
           title: "操作",
           key: "handle",
@@ -162,7 +195,16 @@ export default {
       total: 0,
       currentPage: 1,
       isEditing: false,
-      data: { type: 1, sale: 90, isForever: 1, value: 10, canUse: 1 },
+      data: {
+        desc: "",
+        type: 1,
+        sale: 90,
+        isForever: 1,
+        value: 10,
+        canUse: 1,
+        scope: 1,
+        time: []
+      },
       types: [
         { value: 1, label: "代金券" },
         { value: 2, label: "折扣卷" }
@@ -170,6 +212,10 @@ export default {
       times: [
         { value: 1, label: "长期有效" },
         { value: 2, label: "设置期限" }
+      ],
+      scopes: [
+        { value: 1, label: "部分商品可用" },
+        { value: 2, label: "全店通用" }
       ]
     };
   },
@@ -192,10 +238,8 @@ export default {
     },
     submit() {
       if (this.isEditing) {
-        console.log(8989);
         this.editFun();
       } else {
-        console.log(2222);
         this.addFun();
       }
     },
@@ -216,6 +260,11 @@ export default {
     },
     addFun() {
       let data = this.submitData();
+      console.log(this.data.time);
+      if (this.data.desc.length == 0) {
+        this.$Message.error("必须输入标题");
+        return false;
+      }
       addCoupon(data).then(res => {
         var vo = res.data;
         if (vo.status == "success") {
@@ -248,19 +297,23 @@ export default {
       this.data.desc = params.row.desc;
       this.data.canUse = parseFloat(params.row.canUse);
       this.data.type = parseInt(params.row.type);
+      this.data.scope = parseInt(params.row.scope);
       this.data.isForever = parseInt(params.row.isForever);
-      this.data.startTime = params.row.startTime;
+      this.data.time[0] = new Date(params.row.startTime);
+      this.data.time[1] = new Date(params.row.endTime);
       this.data.sale = parseInt(params.row.sale);
       this.data.canUvaluese = parseFloat(params.row.value);
       this.isShow.add = true;
       this.isEditing = true;
+      console.log(this.data.time);
     },
     submitData() {
       let data = {
         desc: this.data.desc,
         canUse: this.data.canUse,
         type: this.data.type,
-        isForever: this.data.isForever
+        isForever: this.data.isForever,
+        scope: this.data.scope
       };
       if (this.data.isForever == 2) {
         data.startTime = this.data.time[0];
@@ -271,11 +324,21 @@ export default {
       } else {
         data.sale = this.data.sale;
       }
+
       return data;
     },
     reset() {
       this.isShow = { add: false };
-      this.data = { type: 1, sale: 90, isForever: 1, value: 10, canUse: 1 };
+      this.data = {
+        desc: "",
+        type: 1,
+        sale: 90,
+        isForever: 1,
+        value: 10,
+        canUse: 1,
+        scope: 1,
+        time: []
+      };
     }
   },
   mounted() {
