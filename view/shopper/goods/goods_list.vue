@@ -2,8 +2,9 @@
   <div>
     <Card>
       <div>
-        <!-- <Button @click="create" style="padding: 6px 12px;margin-bottom: 10px;" type="primary">添加商品</Button> -->
+        <Button @click="create" style="padding: 6px 12px;margin-bottom: 10px;" type="primary">添加商品</Button>
       </div>
+      <br />
       <tables
         ref="tables"
         editable
@@ -31,6 +32,12 @@
             </Select>
           </Col>
         </Row>
+      </Modal>
+      <Modal v-model="isShowConfirm" title="删除确认" confirm @on-ok="delGoods">
+        <div>
+          <!-- 图片剪裁 -->
+          <h3>删除后商品关联的属性值将一起删除，确认删除吗？</h3>
+        </div>
       </Modal>
     </Card>
     <Modal
@@ -61,7 +68,9 @@ import {
   downGoods,
   editFlagScale,
   findGoodsFlag,
-  getGoodsFlag
+  getGoodsFlag,
+  setGoodsIsThumb,
+  delGoods
 } from "@/api/shop/admin";
 
 import { findCoupons, useCoupon, findGoodsCouponArr } from "@/api/shop/coupon";
@@ -89,6 +98,15 @@ export default {
           }
         },
         {
+          title: "精选",
+          key: "status",
+          maxWidth: 200,
+          tooltip: true,
+          render: (h, params) => {
+            return h("span", {}, params.row.isThumb == 1 ? "是" : "否");
+          }
+        },
+        {
           title: "操作",
           key: "action",
           width: 500,
@@ -96,6 +114,29 @@ export default {
           align: "center",
           render: (h, params) => {
             return h("div", [
+              h(
+                "Button",
+                {
+                  style: {
+                    marginRight: "8px"
+                  },
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      let isThumb = params.row.isThumb == 1 ? 2 : 1;
+                      let data = { id: params.row.id, status: isThumb };
+                      setGoodsIsThumb(data).then(res => {
+                        params.row.isThumb = isThumb;
+                      });
+                      this.params = params;
+                    }
+                  }
+                },
+                params.row.isThumb == 1 ? "取消精选" : "设置精选"
+              ),
               h(
                 "Button",
                 {
@@ -234,6 +275,25 @@ export default {
                   }
                 },
                 "下架"
+              ),
+              h(
+                "Button",
+                {
+                  style: {
+                    marginRight: "8px"
+                  },
+                  props: {
+                    type: "error",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      this.isShowConfirm = true;
+                      this.params = params;
+                    }
+                  }
+                },
+                "删除"
               )
             ]);
           }
@@ -241,6 +301,7 @@ export default {
       ],
       tableData: [],
       isShow: false,
+      isShowConfirm: false,
       approveShow: false, //修改积分或认证
       couponShow: false,
       total: 0,
@@ -283,7 +344,7 @@ export default {
       });
     },
     create() {
-      this.isShow = true;
+      this.$router.push({ name: "goods_add" });
     },
     ok() {
       let data = {
@@ -477,6 +538,17 @@ export default {
       let data = { page: page };
       this.currentPage = page;
       this.find(data);
+    },
+    delGoods() {
+      let data = { id: this.params.row.id };
+      delGoods(data).then(res => {
+        var vo = res.data;
+        if (vo.status == "success") {
+          this.$Message.success(vo.msg);
+        } else {
+          this.$Message.error(vo.msg);
+        }
+      });
     },
     reset() {
       this.data = {};

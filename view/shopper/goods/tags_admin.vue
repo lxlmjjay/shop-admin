@@ -15,14 +15,7 @@
         />
       </div>
     </Card>
-    <Modal
-      v-model="isShow"
-      title="添加商品认证"
-      width="800px"
-      @on-cancel="cancel"
-      ok-text="提交"
-      @on-ok="ok"
-    >
+    <Modal v-model="isShow" title="添加标签" width="800px" @on-cancel="cancel" ok-text="提交" @on-ok="ok">
       <Card style="width:auto">
         <div>
           名称：

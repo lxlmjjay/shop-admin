@@ -19,7 +19,7 @@ export default {
   baseUrl: {
     // dev: 'http://localhost:8080/',
     dev: 'http://39.98.249.37:5101/',
-    pro: 'http://39.98.249.37:7000/'
+    pro: 'http://39.98.249.37:5101/'
   },
   /**
    * @description 默认打开的首页的路由name值，默认为home

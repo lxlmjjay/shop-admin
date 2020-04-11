@@ -6,7 +6,8 @@
       </div>
       <br />
       <div v-for="(items,skuId) in sku" :value="skuId" :key="skuId">
-        <Col span="3">
+        <Col span="6">
+          {{skuId}}：
           <span
             v-for="item in items"
             :value="item.saleAttrValueName"

@@ -44,7 +44,7 @@
 import Tables from "_c/tables";
 import { escape2Html } from "@/libs/com";
 import {
-  findGoods,
+  findGoodsConfirm,
   findGoodsFlag,
   goodsApprove,
   getGoodsFlag
@@ -110,10 +110,10 @@ export default {
       } else {
         data = { status: 1 };
       }
-      findGoods(data).then(res => {
+      findGoodsConfirm(data).then(res => {
         if (res.status == 200) {
           var vo = res.data;
-          if (vo.status == "success" && vo.data != null) {
+          if (vo.status == "success") {
             this.total = res.data.total;
             this.tableData = res.data.data;
           }

@@ -57,7 +57,7 @@
       <Card>
         <!-- 添加商品属性 -->
         <div v-for="(item,k) in tableRows" :value="k" :key="k">
-          <Select label-in-value style="width:260px">
+          <Select label-in-value style="width:260px" v-model="selectDefault">
             <Option
               v-for="attr in selectData.saleAttrs"
               @click.native="perChange(k,attr)"
@@ -111,7 +111,7 @@ import {
   addGoods
 } from "@/api/shop/admin";
 export default {
-  name: "admin_list",
+  name: "goods_add",
   components: {
     Tables,
     Cropper
@@ -132,6 +132,7 @@ export default {
         attrVal: "",
         postAmount: 0
       },
+      selectDefault: 0,
       tableData: [],
       table: [],
       row: [],
@@ -230,6 +231,11 @@ export default {
         .then(res => {
           if (res.data.status == "success") {
             this.selectData.saleAttrs = res.data.data;
+            if (res.data.data) {
+              this.data.saleAttr[0].id = res.data.data[0].id;
+              this.data.saleAttr[0].name = res.data.data[0].name;
+              this.selectDefault = res.data.data[0].id;
+            }
           }
         })
         .catch(function(response) {

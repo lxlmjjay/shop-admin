@@ -196,12 +196,12 @@ export default {
       getGoods(data)
         .then(res => {
           if (res.data.status == "success") {
-            let data = res.data.data;
-            this.tableRows = data.attr;
-            this.data = data.goods;
-            this.data.imageUrl = data.goods.image;
-            this.data.tagId = data.tags;
-            this.data.postAmount = data.postAmount;
+            let vo = res.data.data;
+            this.tableRows = vo.attr;
+            this.data = vo.goods;
+            this.data.imageUrl = vo.goods.image;
+            this.data.tagId = vo.tags;
+            this.data.postAmount = parseFloat(vo.goods.postAmount);
           }
         })
         .catch(function(response) {
@@ -212,7 +212,6 @@ export default {
       // 分类
       findGoodsCategory2()
         .then(res => {
-          console.log(333, res.data);
           if (res.data.status == "success") {
             this.selectData.category = res.data.data;
           }

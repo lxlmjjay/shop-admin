@@ -9,10 +9,19 @@ export const findGoods = (data) => {
     })
 }
 
+//待审核商品列表
+export const findGoodsConfirm = (data) => {
+    return axios.request({
+        url: '/api/admin/shopper/goods-find-confirm',
+        data,
+        method: 'post'
+    })
+}
+
 //商品认证列表
 export const findGoodsFlag = (data) => {
     return axios.request({
-        url: '/api/admin/shop/find-flag',
+        url: '/api/admin/shopper/find-flag',
         data,
         method: 'post'
     })
@@ -446,6 +455,67 @@ export const findGoodsCategoryByLevel = (data) => {
 export const setGoodsCategoryIsHome = (data) => {
     return axios.request({
         url: '/api/admin/shop/is_home',
+        data,
+        method: 'post'
+    })
+}
+
+//设置商品分类推荐
+export const setGoodsIsThumb = (data) => {
+    return axios.request({
+        url: '/api/admin/shopper/goods-thumb',
+        data,
+        method: 'post'
+    })
+}
+
+//设置商品分类推荐
+export const addSaleAttr = (data) => {
+    return axios.request({
+        url: '/api/admin/shop/add-sale-attr',
+        data,
+        method: 'post'
+    })
+}
+
+//删除商品
+export const delGoods = (data) => {
+    return axios.request({
+        url: '/api/admin/shopper/del-goods',
+        data,
+        method: 'post'
+    })
+}
+
+//banner
+export const delBanner = (data) => {
+    return axios.request({
+        url: '/api/admin/shop/del-banner',
+        data,
+        method: 'post'
+    })
+}
+
+//banner
+export const editBanner = (data) => {
+    return axios.request({
+        url: '/api/admin/shop/edit-banner',
+        data,
+        method: 'post'
+    })
+}
+//banner
+export const addBanner = (data) => {
+    return axios.request({
+        url: '/api/admin/shop/add-banner',
+        data,
+        method: 'post'
+    })
+}
+//banner
+export const findBanner = (data) => {
+    return axios.request({
+        url: '/api/v1/shop/banner/find',
         data,
         method: 'post'
     })

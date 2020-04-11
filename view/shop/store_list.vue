@@ -34,10 +34,10 @@
       店铺标语：{{data.slogan}}
       <br />店铺头像：
       <br />
-      <img :src="baseUrl+data.header" alt style="width:20%;" />
+      <img :src="data.header" alt style="width:20%;" />
       <br />店铺二维码：
       <br />
-      <img :src="baseUrl+data.qrCode" alt style="width:20%;" />
+      <img :src="data.qrCode" alt style="width:20%;" />
       <br />
     </Modal>
   </div>
@@ -81,7 +81,13 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.get(params.row.id);
+                      // this.get(params.row.id);
+                      this.data.name = params.row.name;
+                      this.data.brand = params.row.brand;
+                      this.data.address = params.row.address;
+                      this.data.slogan = params.row.slogan;
+                      this.data.header = params.row.header;
+                      this.data.qrCode = params.row.qrCode;
                       this.isShow = true;
                     }
                   }
@@ -102,13 +108,20 @@ export default {
         {
           title: "操作",
           key: "handle",
+          width: 300,
           //   options: ["delete"],
           button: [
             (h, params, vm) => {
               return h(
                 "Button",
                 {
-                  props: {},
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "8px"
+                  },
                   on: {
                     click: () => {
                       this.get(params.row.id);
@@ -127,13 +140,28 @@ export default {
                     confirm: true,
                     title: "确定审核通过吗?"
                   },
+
                   on: {
                     "on-ok": () => {
                       this.approve(params.row.id, 1);
                     }
                   }
                 },
-                [h("Button", "通过")]
+                [
+                  h(
+                    "Button",
+                    {
+                      props: {
+                        type: "primary",
+                        size: "small"
+                      },
+                      style: {
+                        marginRight: "8px"
+                      }
+                    },
+                    "通过"
+                  )
+                ]
               );
             },
             (h, params, vm) => {
@@ -141,6 +169,8 @@ export default {
                 "Poptip",
                 {
                   props: {
+                    size: "small",
+                    type: "primary",
                     confirm: true,
                     title: "确定拒绝吗?"
                   },
@@ -150,7 +180,21 @@ export default {
                     }
                   }
                 },
-                [h("Button", "拒绝")]
+                [
+                  h(
+                    "Button",
+                    {
+                      props: {
+                        type: "primary",
+                        size: "small"
+                      },
+                      style: {
+                        marginRight: "8px"
+                      }
+                    },
+                    "拒绝"
+                  )
+                ]
               );
             }
           ]

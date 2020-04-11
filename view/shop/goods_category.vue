@@ -50,7 +50,7 @@
       </div>
       <br />
       <div>
-        商品图片
+        分类图标
         <Button icon="ios-cloud-upload-outline" @click="uploadFile">上传图片</Button>&nbsp;
         <!-- 上传图片 -->
         <br />

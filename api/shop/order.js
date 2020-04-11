@@ -42,8 +42,13 @@ export const shipped = (data) => {
     })
 }
 
-
-
-
+//修改订单为卖家已发货
+export const payableAmount = (data) => {
+    return axios.request({
+        url: '/api/admin/shopper/payable-amount-admin',
+        data,
+        method: 'post'
+    })
+}
 
 
