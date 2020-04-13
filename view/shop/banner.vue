@@ -51,7 +51,7 @@
     <Modal v-model="isUploadShow" title="上传图片" width="760px" footer-hide>
       <div>
         <!-- 图片剪裁 -->
-        <Cropper @on-crop="saveImage" :ratio="2.2"></Cropper>
+        <Cropper @on-crop="saveImage" :ratio="2.264"></Cropper>
       </div>
     </Modal>
   </div>

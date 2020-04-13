@@ -193,20 +193,16 @@ export default {
   methods: {
     getData() {
       let data = { id: this.gid };
-      getGoods(data)
-        .then(res => {
-          if (res.data.status == "success") {
-            let vo = res.data.data;
-            this.tableRows = vo.attr;
-            this.data = vo.goods;
-            this.data.imageUrl = vo.goods.image;
-            this.data.tagId = vo.tags;
-            this.data.postAmount = parseFloat(vo.goods.postAmount);
-          }
-        })
-        .catch(function(response) {
-          return false;
-        });
+      getGoods(data).then(res => {
+        if (res.data.status == "success") {
+          let vo = res.data.data;
+          this.tableRows = vo.attr;
+          this.data = vo.goods;
+          this.data.imageUrl = vo.goods.image;
+          this.data.tagId = vo.tags;
+          this.data.postAmount = parseFloat(vo.goods.postAmount);
+        }
+      });
     },
     find() {
       // 分类
@@ -341,18 +337,10 @@ export default {
     }
   },
   mounted() {
-    this.gid = this.$route.params.gid;
-    this.currentPage = this.$route.params.page;
+    this.gid = parseInt(this.$route.query.gid);
+    this.currentPage = parseInt(this.$route.query.page);
     this.find();
     this.getData();
-  },
-  watch: {
-    //edit
-    $route(to, from) {
-      if (this.$route.params.id > 0) {
-        this.gid = parseInt(this.$route.params.gid);
-      }
-    }
   }
 };
 </script>

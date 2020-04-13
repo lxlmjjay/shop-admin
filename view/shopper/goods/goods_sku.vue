@@ -12,7 +12,7 @@
             v-for="item in items"
             :value="item.saleAttrValueName"
             :key="item.saleAttrValueId"
-          >{{item.saleAttrValueName}}&nbsp;&nbsp;</span>
+          >{{item.saleAttrName}}：{{item.saleAttrValueName}}，&nbsp;&nbsp;</span>
         </Col>
         <!-- sku 开始 -->
         <span style="margin-left:50px">
@@ -102,7 +102,7 @@
           是否支持积分兑换：
           <Select v-model="data.isScore" style="width:260px">
             <Option v-for="it in isScoreArr" :value="it.value" :key="it.value">{{ it.label }}</Option>
-          </Select>
+          </Select>（积分兑换默认免邮费）
         </div>
         <br />
         <div v-show="data.isScore==1">
@@ -313,6 +313,7 @@ export default {
       findSkuByGid(skuData).then(res => {
         if (res.data.status == "success") {
           this.sku = res.data.data;
+          console.log(this.sku);
         }
       });
       findWeightUnit().then(res => {
@@ -482,7 +483,6 @@ export default {
       });
     },
     handleView(name) {
-      console.log(1111, name);
       this.imgName = name;
       this.visible = true;
     },
@@ -618,9 +618,9 @@ export default {
     }
   },
   created() {
-    this.gid = this.$route.params.gid;
-    this.cid = this.$route.params.cid;
-    this.currentPage = this.$route.params.page;
+    this.gid = this.$route.query.gid;
+    this.cid = this.$route.query.cid;
+    this.currentPage = this.$route.query.page;
     this.uploadList = [];
   },
   // watch: {

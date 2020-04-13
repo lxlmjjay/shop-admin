@@ -34,9 +34,6 @@ export default {
     local: localRead('local'),
     errorList: [],
     hasReadErrorPage: false,
-    //add by vicky
-    menuList: [],//拿到的路由数据
-    hasGetRouter: false//是否已经拿过路由数据
   },
   getters: {
     menuList: (state, getters, rootState) => getMenuByRouter(routers, rootState.user.access),
@@ -44,13 +41,6 @@ export default {
     errorCount: state => state.errorList.length
   },
   mutations: {
-    //add by vicky
-    updateMenuList (state, routes) { // ①添 接受前台数组，刷新菜单
-      router.addRoutes(routes); // 动态添加路由
-      state.menuList = routes;
-      console.log('①updateMenuList添menuList', this);
-    },
-
     setBreadCrumb(state, route) {
       state.breadCrumbList = getBreadCrumbList(route, state.homeRoute)
     },
@@ -100,23 +90,6 @@ export default {
     }
   },
   actions: {
-    //add by vicky
-    getRouters({commit}) {
-      return new Promise((resolve, reject) => {
-        try {
-          getRouterReq().then(res => {
-            let routers = backendMenusToRouters(res.data)
-            commit('setRouters', routers)
-            commit('setHasGetRouter', true)
-            resolve(routers)
-          }).catch(err => {
-            reject(err)
-          })
-        } catch (error) {
-          reject(error)
-        }
-      })
-    },
     addErrorLog({ commit, rootState }, info) {
       if (!window.location.href.includes('error_logger_page')) commit('setHasReadErrorLoggerStatus', false)
       const { user: { token, userId, userName } } = rootState

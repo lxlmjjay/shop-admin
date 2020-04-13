@@ -15,7 +15,6 @@ import '@/assets/icons/iconfont.css'
 import TreeTable from 'tree-table-vue'
 import VOrgTree from 'v-org-tree'
 import 'v-org-tree/dist/v-org-tree.css'
-import { initRouter } from '@/libs/router-util' // ①新增  引入动态菜单渲染
 import has from '@/libs/hasPermission.js'
 Vue.use(has)
 // 实际打包时应该不引入mock
@@ -53,6 +52,5 @@ new Vue({
   store,
   render: h => h(App),
   mounted() {
-    // initRouter(this);  // ①新增 调用方法,动态生成路由
   },
 })

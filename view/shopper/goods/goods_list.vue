@@ -200,8 +200,8 @@ export default {
                   on: {
                     click: () => {
                       this.$router.push({
-                        name: "goods_sku",
-                        params: {
+                        path: "/store/goods-sku",
+                        query: {
                           gid: params.row.id,
                           cid: params.row.cid,
                           page: this.currentPage
@@ -243,15 +243,12 @@ export default {
                   on: {
                     click: () => {
                       this.$router.push({
-                        name: "goods_edit",
-                        params: {
+                        path: "/store/goods-edit",
+                        query: {
                           gid: params.row.id,
-                          cid: params.row.cid
+                          cid: params.row.cid,
+                          page: this.currentPage
                         }
-                        /*query: {
-                                            key: 'key',
-                                            msgKey: this.msg
-                                        }*/
                       });
                     }
                   }

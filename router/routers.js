@@ -1,6 +1,5 @@
 import Main from '@/components/main'
 import parentView from '@/components/parent-view'
-import { dynamicRouterAdd } from '@/libs/router-util' // ①添 引入加载菜单
 
 /**
  * iview-admin中meta除了原生参数外可配置的参数:
@@ -18,44 +17,7 @@ import { dynamicRouterAdd } from '@/libs/router-util' // ①添 引入加载菜�
  * }
  */
 
-// 不作为Main组件的子页面展示的页面单独写
-export const otherRouter = [{
-  path: '/login',
-  name: 'login',
-  meta: {
-    title: 'Login - 登录',
-    hideInMenu: true
-  },
-  component: () => import('@/view/login/login.vue')
-},
-{
-  path: '/401',
-  name: 'error_401',
-  meta: {
-    hideInMenu: true
-  },
-  component: () => import('@/view/error-page/401.vue')
-},
-{
-  path: '/500',
-  name: 'error_500',
-  meta: {
-    hideInMenu: true
-  },
-  component: () => import('@/view/error-page/500.vue')
-},
-{
-  path: '*',
-  name: 'error_404',
-  meta: {
-    hideInMenu: true
-  },
-  component: () => import('@/view/error-page/404.vue')
-}
-];
-
-// 作为Main组件的子页面展示但是不在左侧菜单显示的路由写在mainRouter里
-export const mainRouter = [
+export default [
   {
     path: '/',
     name: '_home',
@@ -98,8 +60,40 @@ export const mainRouter = [
         component: () => import('@/view/single-page/message/index.vue')
       }
     ]
-  }];
-export const myRouter = [
+  },
+  {
+    path: '/login',
+    name: 'login',
+    meta: {
+      title: 'Login - 登录',
+      hideInMenu: true
+    },
+    component: () => import('@/view/login/login.vue')
+  },
+  {
+    path: '/401',
+    name: 'error_401',
+    meta: {
+      hideInMenu: true
+    },
+    component: () => import('@/view/error-page/401.vue')
+  },
+  {
+    path: '/500',
+    name: 'error_500',
+    meta: {
+      hideInMenu: true
+    },
+    component: () => import('@/view/error-page/500.vue')
+  },
+  {
+    path: '*',
+    name: 'error_404',
+    meta: {
+      hideInMenu: true
+    },
+    component: () => import('@/view/error-page/404.vue')
+  },
   {
     path: '/admin',
     name: 'admin',
@@ -126,8 +120,7 @@ export const myRouter = [
           title: '角色列表',
           icon: 'md-funnel'
         },
-        // component: () => import('@/view/admin/role_list')
-        component: r => require.ensure([], () => r(require('@/view/admin/role_list')), 'role_list')
+        component: () => import('@/view/admin/role_list')
       },
     ]
   },
@@ -148,8 +141,7 @@ export const myRouter = [
           icon: 'md-funnel',
           title: '添加资讯',
         },
-        component: import('@/view/information/add.vue')
-        // component: () => import('@/view/information/add.vue')
+        component: () => import('@/view/information/add.vue')
       },
       {
         path: 'edit',
@@ -459,17 +451,5 @@ export const myRouter = [
         component: () => import('@/view/shopper/goods/tags_admin.vue')
       },
     ]
-  },
-];
-// 作为Main组件的子页面展示并且在左侧菜单显示的路由写在appRouter里
-// export const appRouter = [...dynamicRouterAdd()];
-
-export const routes = [
-  ...otherRouter,
-  ...mainRouter,
-  // ...appRouter
-  ...myRouter
+  }
 ]
-
-// 所有上面定义的路由都要写在下面输出
-export default routes

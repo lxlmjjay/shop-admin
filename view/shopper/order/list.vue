@@ -125,7 +125,7 @@ export default {
         {
           title: "订单号",
           key: "orderNo",
-          maxWidth: 200,
+          width: 200,
           tooltip: true
         },
         {
@@ -380,6 +380,8 @@ export default {
       shipped(data).then(res => {
         var vo = res.data;
         if (vo.status == "success") {
+          this.find({ page: this.currentPage });
+          this.findUnpay({ page: this.currentPage, status: 1 });
           this.$Message.success(vo.msg);
         } else {
           this.$Message.error(vo.msg);
