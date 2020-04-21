@@ -21,3 +21,21 @@ export const upload214_162 = (data) => {
         method: 'post'
     })
 }
+
+// ali video
+export const getUploadAuthAndAddress = (data) => {
+    return axios.request({
+        url: '/api/admin/video/getUploadAddressAuth',
+        data,
+        method: 'post'
+    })
+}
+
+// ali video
+export const refreshUploadAuthAndAddress = (data) => {
+    return axios.request({
+        url: '/api/admin/video/refreshUploadAddressAuth',
+        data,
+        method: 'post'
+    })
+}

@@ -520,3 +520,31 @@ export const findBanner = (data) => {
         method: 'post'
     })
 }
+
+//编辑商品sku
+export const editGoodsSkuValue = (data) => {
+    return axios.request({
+        url: '/api/admin/shopper/goods-edit-sale-attr-value',
+        data,
+        method: 'post'
+    })
+}
+
+//编辑商品sku
+export const delGoodsSkuValue = (data) => {
+    return axios.request({
+        url: '/api/admin/shopper/goods-del-sale-attr-value',
+        data,
+        method: 'post'
+    })
+}
+
+//编辑商品sku
+export const goodsListReject = (data) => {
+    return axios.request({
+        url: '/api/admin/shop/goods-reject',
+        data,
+        method: 'post'
+    })
+}
+

@@ -5,6 +5,8 @@
     </div>
     <br />
     <Card style="width:auto">
+      <div style="color:red">已发布的商品编辑后将变为草稿状态，需要再次审核！</div>
+      <br />
       分类：{{ data.cName }}
       <!-- <Select v-model="data.cid" disabled style="width:260px">
             <Option :value="data.cid" :key="data.cid">{{ data.cName }}</Option>
@@ -46,17 +48,16 @@
       </div>
       <br />
       <div>
-        <Button
+        <!-- <Button
           @click="createRow"
-          disabled
           style="padding: 6px 12px;margin-bottom: 10px;"
           type="primary"
-        >添加商品SKU</Button>
+        >添加商品SKU</Button>-->
       </div>
       <Card>
         <!-- 添加商品属性 -->
         <div v-for="(item,k) in tableRows" :value="k" :key="k">
-          <Select v-model="item.keyId" disabled label-in-value style="width:260px">
+          <Select v-model="item.keyId" label-in-value style="width:260px" disabled>
             <Option
               v-for="attr in selectData.saleAttrs"
               @click.native="perChange(k,attr)"
@@ -64,17 +65,34 @@
               :key="attr.id"
             >{{ attr.name }}</Option>
           </Select>属性值
-          <span v-for="(it,v) in item.col" :value="v" :key="v">
+          <span v-for="(it,v) in item.value" :value="v" :key="v">
             <Input
-              v-model="it.inputVal"
-              disabled
-              :value="it.inputVal"
-              @on-blur="appendValue(k,v)"
+              v-model="it.valName"
+              :value="it.valName"
+              @on-focus="editVal(k,v)"
               style="width: 100px"
-            />&nbsp;
+            />
+            <span v-if="edittingCellId=='cell-'+k+'-'+v">
+              <span :id="'cell-'+k+'-'+v" @click="editValSave(k,v)">
+                <Icon type="md-checkmark" size="18" />&nbsp;
+              </span>
+              <span @click="cancelEditVal(k,v)">
+                <Icon type="md-close" size="18" />&nbsp;
+              </span>
+            </span>
+            <span v-else>
+              <span @click="delValue(k,v)">
+                <Icon type="ios-trash" size="20" />&nbsp;
+              </span>
+              &nbsp;
+            </span>
           </span>
-          <!-- <Button @click="createCol(k)" style="padding: 6px 12px;margin-bottom: 10px;" type="primary">添加值</Button> -->
-          <br />
+          <Button
+            @click="createCol(k)"
+            style="padding: 6px 12px;margin-bottom: 10px;"
+            type="primary"
+            size="small"
+          >添加值</Button>&nbsp;
           <br />
         </div>
         <br />
@@ -86,6 +104,16 @@
       <div>
         <!-- 图片剪裁 -->
         <Cropper @on-crop="saveImage"></Cropper>
+      </div>
+    </Modal>
+    <Modal v-model="editValSaveConfirm" title="提交确认" confirm @on-ok="editValSaveFun">
+      <div>
+        <h3>确认修改商品属性值吗？</h3>
+      </div>
+    </Modal>
+    <Modal v-model="delValSaveConfirm" title="删除确认" confirm @on-ok="delValueFun">
+      <div>
+        <h3>该属性值下所有商品都会被删除并不可恢复，确定删除吗？</h3>
       </div>
     </Modal>
   </div>
@@ -100,7 +128,9 @@ import {
   findTags,
   findSaleAttrs,
   editGoods,
-  getGoods
+  getGoods,
+  editGoodsSkuValue,
+  delGoodsSkuValue
 } from "@/api/shop/admin";
 export default {
   name: "admin_list",
@@ -117,12 +147,14 @@ export default {
         tags: [],
         category: []
       },
-      tableRows: [{ col: [{}], keyId: 0, keyName: "" }],
-      tableCols: [{}],
+      tableRows: [
+        { value: [{ valId: 0, valName: "" }], keyId: 0, keyName: "" }
+      ],
+      tableCols: [{ valName: "" }],
       data: {
         sku: [],
         images: [],
-        saleAttr: [{ id: 0, name: "", value: [] }],
+        saleAttr: [{ id: 0, name: "", value: [{ valId: 0, valName: "" }] }],
         attrVal: "",
         postAmount: 0
       },
@@ -133,6 +165,13 @@ export default {
       col: [],
       imgShow: true,
       isUploadShow: false,
+      isEditingSkuRow: -1,
+      edittingCellId: "",
+      editingInputValue: "",
+      editValSaveConfirm: false,
+      delValSaveConfirm: false,
+      editK: -1,
+      editV: -1,
       columns: [
         {
           title: "属性名称",
@@ -201,7 +240,9 @@ export default {
           this.data.imageUrl = vo.goods.image;
           this.data.tagId = vo.tags;
           this.data.postAmount = parseFloat(vo.goods.postAmount);
+          this.data.saleAttr = vo.attr;
         }
+        console.log(this.tableRows);
       });
     },
     find() {
@@ -241,30 +282,93 @@ export default {
     },
     // 添加销售属性
     createRow() {
-      this.tableRows.push({ col: [{}], keyId: 0, keyName: "" });
+      this.tableRows.push({
+        value: [{ valId: 0, valName: "" }],
+        keyId: 0,
+        keyName: ""
+      });
     },
     createCol(k) {
-      if (!this.data.saleAttr[k] || this.data.saleAttr[k].id <= 0) {
-        alert("请先选择属性");
-        return;
-      }
-      this.tableRows[k].col.push({});
-      this.data.saleAttr[k].value.push("");
+      this.tableRows[k].value.push({ valId: 0, valName: "" });
     },
+    editVal(k, v) {
+      this.editingInputValue = this.tableRows[k].value[v].valName;
+      this.edittingCellId = "cell-" + k + "-" + v;
+    },
+    editValSave(k, v) {
+      this.editK = k;
+      this.editV = v;
+      this.editValSaveConfirm = true;
+    },
+    editValSaveFun() {
+      let ob = this.tableRows[this.editK].value[this.editV];
+      this.editingInputValue = ob.valName;
+      /*
+      	Gid     int64
+        KeyId   int64
+        KeyName string
+        ValId   int64
+        ValName string
+      */
+      console.log(this.tableRows[this.editK]);
+      let data = {
+        Gid: this.gid,
+        KeyId: this.tableRows[this.editK].keyId,
+        KeyName: this.tableRows[this.editK].keyName,
+        ValId: ob.valId,
+        ValName: ob.valName
+      };
+      editGoodsSkuValue(data).then(res => {
+        if (res.data.status == "success") {
+          this.getData();
+          this.$Message.success(res.data.msg);
+        } else {
+          this.$Message.error(res.data.msg);
+        }
+      });
+      this.edittingCellId = "";
+    },
+    cancelEditVal(k, v) {
+      this.tableRows[k].value[v].valName = this.editingInputValue;
+      this.edittingCellId = "";
+    },
+    isEditingSku() {},
     appendValue(k, v) {
-      let input = this.tableRows[k].col[v].inputVal;
-      if (!this.data.saleAttr[k]) {
-        this.tableRows[k].col[v].inputVal = "";
-        alert("请先选择属性");
-        return;
-      }
-      this.data.saleAttr[k].value[v] = input;
+      let valName = this.tableRows[k].value[v].valName;
+      let valId = this.tableRows[k].value[v].valId;
     },
     perChange(k, attr) {
-      if (attr.value == undefined) {
-        attr.value = [];
+      console.log(k, attr);
+      console.log(this.tableRows);
+      this.tableRows[k].keyId = attr.id;
+      this.tableRows[k].keyName = attr.name;
+    },
+    delValue(k, v) {
+      this.editK = k;
+      this.editV = v;
+      if (this.tableRows[k].value[v].valId == 0) {
+        this.tableRows[k].value.splice(v, 1);
+        return;
+      } else {
+        this.delValSaveConfirm = true;
       }
-      this.data.saleAttr[k] = attr;
+    },
+    delValueFun() {
+      let k = this.editK;
+      let v = this.editV;
+      let data = { Id: this.tableRows[k].value[v].valId };
+      delGoodsSkuValue(data).then(res => {
+        if (res.data.status == "success") {
+          if (this.tableRows[k].value.length == 1) {
+            this.tableRows[k].value[v].valName = "";
+          } else {
+            this.tableRows[k].value.splice(v, 1);
+          }
+          this.$Message.success(res.data.msg);
+        } else {
+          this.$Message.error(res.data.msg);
+        }
+      });
     },
     editGoods() {
       /**
@@ -281,7 +385,8 @@ export default {
         desc: this.data.desc,
         image: this.data.imageName,
         tagId: this.data.tagId,
-        postAmount: this.data.postAmount
+        postAmount: this.data.postAmount,
+        saleAttr: this.tableRows
       };
       editGoods(data)
         .then(res => {

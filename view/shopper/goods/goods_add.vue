@@ -56,8 +56,12 @@
       </div>
       <Card>
         <!-- 添加商品属性 -->
+
         <div v-for="(item,k) in tableRows" :value="k" :key="k">
-          <Select label-in-value style="width:260px" v-model="selectDefault">
+          <span @click="delRow(k)">
+            <Icon type="md-close" />&nbsp;
+          </span>
+          <Select label-in-value style="width:260px">
             <Option
               v-for="attr in selectData.saleAttrs"
               @click.native="perChange(k,attr)"
@@ -71,7 +75,10 @@
               :value="it.inputVal"
               @on-blur="appendValue(k,v)"
               style="width: 100px"
-            />&nbsp;
+            />
+            <span @click="delValue(k,v)">
+              <Icon type="md-close" />&nbsp;
+            </span>
           </span>
           <Button
             @click="createCol(k)"
@@ -123,16 +130,15 @@ export default {
         tags: [],
         category: []
       },
-      tableRows: [{ col: [{}], keyId: 0, keyName: "" }],
-      tableCols: [{}],
+      tableRows: [{ col: [{ valName: "" }], keyId: 0, keyName: "" }],
+      tableCols: [{ valName: "" }],
       data: {
         sku: [],
         images: [],
-        saleAttr: [{ id: 0, name: "", value: [] }],
+        saleAttr: [{ id: 0, name: "", value: [{ valName: "" }] }],
         attrVal: "",
         postAmount: 0
       },
-      selectDefault: 0,
       tableData: [],
       table: [],
       row: [],
@@ -186,10 +192,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      console.log(params.index);
-                      console.log(this.tableData);
                       this.tableData.splice(params.index, 1);
-                      console.log(this.tableData);
                     }
                   }
                 },
@@ -218,7 +221,6 @@ export default {
       // 标签
       findTags()
         .then(res => {
-          console.log(444, res.data);
           if (res.data.status == "success") {
             this.selectData.tags = res.data.data;
           }
@@ -227,33 +229,30 @@ export default {
           console.log(response);
           return false;
         });
-      findSaleAttrs()
-        .then(res => {
-          if (res.data.status == "success") {
-            this.selectData.saleAttrs = res.data.data;
-            if (res.data.data) {
-              this.data.saleAttr[0].id = res.data.data[0].id;
-              this.data.saleAttr[0].name = res.data.data[0].name;
-              this.selectDefault = res.data.data[0].id;
-            }
+      findSaleAttrs().then(res => {
+        if (res.data.status == "success") {
+          this.selectData.saleAttrs = res.data.data;
+          if (res.data.data) {
+            this.data.saleAttr[0].id = res.data.data[0].id;
+            this.data.saleAttr[0].name = res.data.data[0].name;
           }
-        })
-        .catch(function(response) {
-          console.log(response);
-          return false;
-        });
+        }
+      });
     },
     // 添加销售属性
     createRow() {
-      this.tableRows.push({ col: [{}], keyId: 0, keyName: "" });
+      this.tableRows.push({ col: [{ valName: "" }], keyId: 0, keyName: "" });
+    },
+    delRow(k) {
+      if (this.tableRows.length == 1) {
+        this.tableRows = [{ col: [{ valName: "" }], keyId: 0, keyName: "" }];
+      } else {
+        this.tableRows.splice(k, 1);
+      }
     },
     createCol(k) {
-      if (!this.data.saleAttr[k] || this.data.saleAttr[k].id <= 0) {
-        alert("请先选择属性");
-        return;
-      }
-      this.tableRows[k].col.push({});
-      this.data.saleAttr[k].value.push("");
+      console.log(this.data.saleAttr);
+      this.tableRows[k].col.push({ valName: "" });
     },
     appendValue(k, v) {
       let input = this.tableRows[k].col[v].inputVal;
@@ -264,9 +263,17 @@ export default {
       }
       this.data.saleAttr[k].value[v] = input;
     },
+    delValue(k, v) {
+      if (this.tableRows[k].col.length == 1) {
+        this.tableRows[k].col[v].inputVal = "";
+      } else {
+        this.tableRows[k].col.splice(v, 1);
+      }
+    },
     perChange(k, attr) {
+      console.log("perChange", k, attr);
       if (attr.value == undefined) {
-        attr.value = [];
+        attr.value = [{ valName: "" }];
       }
       this.data.saleAttr[k] = attr;
     },
@@ -340,7 +347,6 @@ export default {
           this.imgShow = true;
           this.data.imageUrl = vo.data.url;
           this.data.imageName = vo.data.name;
-          console.log(666, this.data);
         } else if (vo.status == "tokenExpire" || vo.status == "tokenFail") {
           // token 过期 跳转登录页面 todo
           this.$route.push({ name: "login" });

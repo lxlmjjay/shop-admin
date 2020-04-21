@@ -47,7 +47,8 @@ import {
   findGoodsConfirm,
   findGoodsFlag,
   goodsApprove,
-  getGoodsFlag
+  getGoodsFlag,
+  goodsListReject
 } from "@/api/shop/admin";
 export default {
   name: "goods_list_confirm",
@@ -85,7 +86,46 @@ export default {
           title: "操作",
           key: "handle",
           width: 200,
-          options: ["view", "approve"]
+          options: ["view", "approve"],
+          button: [
+            (h, params, vm) => {
+              return h(
+                "Button",
+                {
+                  style: {
+                    cursor: "pointer",
+                    marginRight: "8px"
+                  },
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      let data = { id: params.row.id };
+                      goodsListReject(data)
+                        .then(res => {
+                          if (res.data.status == "tokenFail") {
+                            this.$Message.error("请重新登录");
+                            this.$router.push({
+                              name: "login"
+                            });
+                            //token 过期 跳login
+                          } else if (res.data.status == "success") {
+                            this.$Message.success(res.data.msg);
+                            this.find({ page: this.currentPage });
+                          } else {
+                            this.$Message.error(res.data.msg);
+                          }
+                        })
+                        .catch(err => {});
+                    }
+                  }
+                },
+                "拒绝"
+              );
+            }
+          ]
         }
       ],
       statusText: { 1: "" },

@@ -451,5 +451,29 @@ export default [
         component: () => import('@/view/shopper/goods/tags_admin.vue')
       },
     ]
-  }
+  },
+  {
+    path: '/video',
+    name: 'video',
+    component: Main,
+    meta: {
+      title: '视频管理',
+      icon: 'md-menu',
+      access: ['video'],
+    },
+    children: [
+      {
+        path: 'video_category',
+        name: 'video_category',
+        meta: {
+          title: '视频管理',
+          icon: 'md-funnel'
+        },
+        component: () => import('@/view/video/category')
+      },
+    ]
+  },
+
+  // end
+
 ]

@@ -65,6 +65,11 @@
     >
       <Card style="width:auto">
         <div>
+          名称：
+          <Input v-model="data.skuName" placeholder="请输入商品名称..." style="width: 200px" />
+        </div>
+        <br />
+        <div>
           编码：
           <Input v-model="data.skuNo" placeholder="请输入商品编码..." style="width: 200px" />
         </div>
@@ -382,6 +387,7 @@ export default {
           getSkuGoods(data).then(res => {
             if (res.data.status == "success") {
               let rsp = res.data.data;
+              this.data.skuName = rsp.skuName;
               this.data.price = rsp.price;
               this.data.desc = rsp.skuDesc;
               this.data.weight = rsp.weight;
@@ -451,7 +457,8 @@ export default {
         isScore: this.data.isScore,
         score: this.data.score,
         skuNo: this.data.skuNo,
-        defaultImg: this.data.defaultImg
+        defaultImg: this.data.defaultImg,
+        skuName: this.data.skuName
       };
       addSkuGoods(data).then(res => {
         if (res.data.status == "success") {

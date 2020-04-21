@@ -93,7 +93,7 @@ export default {
           maxWidth: 200,
           tooltip: true,
           render: (h, params) => {
-            let text = { 0: "草稿", 1: "待审核", 2: "已发布", 3: "禁用" };
+            let text = { 0: "草稿", 1: "待审核", 2: "已发布", 3: "拒绝" };
             return h("span", {}, text[params.row.status]);
           }
         },
@@ -271,7 +271,7 @@ export default {
                     }
                   }
                 },
-                "下架"
+                "草稿"
               ),
               h(
                 "Button",
